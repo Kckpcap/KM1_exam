@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta HTTP-EQUIV="pragma" CONTENT="no-cache" />
+    <meta HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate" />
+    <meta HTTP-EQUIV="expires" CONTENT="0" />
+    <title>试题检查</title>
+    <link rel="stylesheet" href="./static/layui/css/layui.css" />
+    <link rel="stylesheet" href="./static/css/base.css" />
+    <script src="./static/layui/layui.all.js"></script>
+    <style>
+      .td-lable {
+        display: inline-block;
+        width: 80px;
+        text-align: right;
+      }
+      .red-td {
+        background-color: #ff5722;
+        color: #fff;
+      }
+      .td-div {
+        line-height: 20px;
+      }
+      .table-title {
+        height: 40px;
+        line-height: 40px;
+        text-align: center;
+        border: 1px solid #d9d9d9;
+        background: #f2f2f2;
+        border-bottom: none;
+      }
+      .layui-table {
+        margin-top: 0;
+        table-layout: fixed;
+      }
+      .layui-table th,
+      .layui-table td {
+        text-align: center;
+      }
+      #tableATitle th,
+      #tableBTitle th,
+      #tableCTitle th {
+        padding: 20px 0;
+        font-size: 24px;
+        font-weight: bold;
+      }
+      #tableThsA th,
+      #tableThsB th,
+      #tableThsC th {
+        font-weight: bold;
+        background-color: #fff;
+      }
+    </style>
+
+  </head>
+  <body>
+    <div class="dmain-container">
+      <div class="top-menu">
+        <ul class="layui-nav" lay-filter="">
+          <li class="layui-nav-item">
+            <a href="./exam-list.html">试题管理</a>
+          </li>
+          <li class="layui-nav-item layui-this">
+            <a href="./check.html">试题检查</a>
+          </li>
+          <li class="layui-nav-item">
+            <a href="./machine.html">练习机管理</a>
+          </li>
+          <li class="layui-nav-item">
+            <a href="./student-list.html">学员列表</a>
+          </li>
+          <li class="layui-nav-item"><a href="./monitor.html">监控</a></li>
+          <li class="layui-nav-item a-log"><a href="./log.html">日志</a></li>
+          <li class="layui-nav-item"><a href="./login.html">退出</a></li>
+        </ul>
+        <div class="right-info"></div>
+      </div>
+      <div class="dmain-content">
+        <div class="dmain-title">试题检查</div>
+        <div class="search-table" style="margin-bottom: 50px">
+          <form class="layui-form" action="" lay-filter="searchForm">
+            <div class="layui-form-item">
+              <div class="layui-inline">
+                <label class="layui-form-label">试题难度</label>
+                <div class="layui-input-inline">
+                  <select
+                    name="stnd"
+                    lay-filter="stnd"
+                    id="stndList"
+                    lay-verify="required"
+                  >
+                    <option value=""></option>
+                  </select>
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">适用车型</label>
+                <div class="layui-input-inline">
+                  <select
+                    name="sycx"
+                    lay-filter="sycx"
+                    id="sycxList"
+                    lay-verify="required"
+                  >
+                    <option value=""></option>
+                  </select>
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">考试原因</label>
+                <div class="layui-input-inline">
+                  <select
+                    name="ksyy"
+                    lay-filter="ksyy"
+                    id="ksyyList"
+                    lay-verify="required"
+                  >
+                    <option value=""></option>
+                  </select>
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">题型</label>
+                <div class="layui-input-inline">
+                  <select
+                    name="sttx"
+                    id="sttxListId"
+                    lay-filter="sttx"
+                    lay-verify="required"
+                  >
+                    <option value=""></option>
+                  </select>
+                </div>
+              </div>
+              <div class="layui-inline">
+                <button class="layui-btn" lay-submit lay-filter="searchForm">
+                  查询
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="dmain-table">
+          <!-- <div class="table-title" id="tableATitle">难度一级 / C1 / A / 判断题 / 科一</div> -->
+          <table class="layui-table" id="tableA" style="margin: 0">
+            <colgroup>
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+            </colgroup>
+            <thead>
+              <tr id="tableATitle"></tr>
+              <tr id="tableThsA"></tr>
+            </thead>
+            <tbody id="tableBodyA"></tbody>
+          </table>
+          <table class="layui-table" id="tableB" style="margin: 0">
+            <colgroup>
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+            </colgroup>
+            <thead>
+              <tr id="tableBTitle"></tr>
+              <tr id="tableThsB"></tr>
+            </thead>
+            <tbody id="tableBodyB"></tbody>
+          </table>
+          <table class="layui-table" id="tableC" style="margin: 0">
+            <colgroup>
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+            </colgroup>
+            <thead>
+              <tr id="tableCTitle"></tr>
+              <tr id="tableThsC"></tr>
+            </thead>
+            <tbody id="tableBodyC"></tbody>
+          </table>
+        </div>
+        <div id="dpages"></div>
+      </div>
+    </div>
+
+    <!-- 修改登录人密码 start-->
+    <div class="dmy-dialog" id="userPwdDialog">
+      <form class="layui-form" action="" lay-filter="userpwdForm">
+        <div class="layui-form-item">
+          <label class="layui-form-label">用户名</label>
+          <div class="layui-input-block">
+            <input
+              type="text"
+              name="userName"
+              required
+              lay-verify="required"
+              placeholder="请输入"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <label class="layui-form-label">原密码</label>
+          <div class="layui-input-block">
+            <input
+              type="password"
+              name="oldPwd"
+              required
+              lay-verify="required|passwd2"
+              placeholder="请输入"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <label class="layui-form-label">新密码</label>
+          <div class="layui-input-block">
+            <input
+              type="password"
+              name="userPwd2"
+              required
+              lay-verify="required|passwd2"
+              placeholder="请输入"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <label class="layui-form-label">确认密码</label>
+          <div class="layui-input-block">
+            <input
+              type="password"
+              name="checkPwd2"
+              required
+              lay-verify="required|checkpwd2"
+              placeholder="请输入"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </div>
+        </div>
+        <div class="layui-form-item" style="text-align: center">
+          <div class="layui-input-block" style="margin-left: 0">
+            <button
+              class="layui-btn"
+              id="userPwdBtn"
+              lay-submit
+              lay-filter="userpwdForm"
+            >
+              立即提交
+            </button>
+            <button type="button" class="cancleBtn layui-btn layui-btn-primary">
+              取消
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <!-- 修改登录人密码 end-->
+    <script src="./static/js/md5.js"></script>
+    <script src="./static/js/utils.js"></script>
+    <script type="text/javascript" language="javascript">
+      !(function () {
+        getStatus(); //获取状态
+        //初始化数据
+        var options = {
+          url: "/cstk/checkTi",
+          tableQuery: {
+            // kemu: "",
+            sttx: "",
+            sycx: "",
+            ksyy: "",
+            stnd: "",
+          },
+          suc: renderFun, //渲染dom函数
+        };
+        var tableData = []; //列表数据
+        var currnetData = null; //当前选中的row
+        var laypage = layui.laypage,
+          layer = layui.layer,
+          laydate = layui.laydate,
+          sycxList = window.ADMIN_SETTING.sycxList,
+          ksyyList = window.ADMIN_SETTING.sqyyList,
+          typeArrs = ADMIN_SETTING.typeArrs,
+          form = layui.form;
+        var jq = layui.$;
+        var levelsArr = ADMIN_SETTING.levelsArr.map((item) => {
+          item.label = item.label.substr(1);
+          return item;
+        });
+        levelsArr.shift();
+        // 加载适用车型
+        addOptions("#sycxList", sycxList);
+
+        addOptions("#stndList", levelsArr);
+        // 加载考试原因
+        addOptions("#ksyyList", ksyyList);
+
+        addOptions("#sttxListId", typeArrs);
+
+        form.render(); //加载表单元素
+
+        var roomDom = jq("#searchRoomList"),
+          roomList = [];
+        var roomOptionList = [];
+        var tableTitle = "";
+        // getTable();
+
+        // form.on("select(ksyy)", function (data) {
+        //   let reson = data.value;
+        //   jq("#sttxListId").html('<option value=""></option>');
+        //   if (reson == "U") {
+        //     let arr = JSON.parse(JSON.stringify(typeArrs));
+        //     arr.pop();
+        //     addOptions("#sttxListId", arr);
+        //   } else {
+        //     addOptions("#sttxListId", typeArrs);
+        //   }
+        //   options.tableQuery.ksyy = reson;
+        //   form.render();
+        // });
+        // form.on("select(stnd)", function (data) {
+        //   options.tableQuery.stnd = data.value;
+        // });
+        // form.on("select(sycx)", function (data) {
+        //   options.tableQuery.sycx = data.value;
+        // });
+        // form.on("select(sttx)", function (data) {
+        //   let reson = data.value;
+        //   jq("#ksyyList").html('<option value=""></option>');
+        //   if (reson == "3") {
+        //     let ksyyList1 = JSON.parse(JSON.stringify(ksyyList));
+        //     ksyyList1.pop();
+        //     addOptions("#ksyyList", ksyyList1);
+        //   } else {
+        //     addOptions("#ksyyList", ksyyList);
+        //   }
+        //   options.tableQuery.sttx = reson;
+        //   form.val("searchForm", options.tableQuery);
+        //   form.render();
+        // });
+
+        // 查询
+        form.on("submit(searchForm)", function (data) {
+          options.tableQuery = Object.assign(options.tableQuery, data.field);
+          let ndstr = data.field.stnd.substr(1);
+          options.tableQuery.stnd = data.field.stnd;
+          let ksyyStr = ksyyList.filter((c) => {
+            return c.value == options.tableQuery.ksyy;
+          });
+          tableTitle =
+            "难度" +
+            ndstr +
+            " / " +
+            options.tableQuery.sycx +
+            " / " +
+            ksyyStr[0].label +
+            " / " +
+            ADMIN_SETTING.typeArr[options.tableQuery.sttx - 1] +
+            " / ";
+          // if (data.field.sttx == 3) {
+          //   jq("#tableA").hide();
+          // } else {
+          //   jq("#tableA").show();
+          // }
+          // if (data.field.ksyy == "U") {
+          //   jq("#tableB").hide();
+          // } else {
+          //   jq("#tableB").show();
+          // }
+          getTable();
+          return false;
+        });
+        function getTable() {
+          ajaxPromise({
+            url: "/cstk/checkTi",
+            datas: options.tableQuery,
+            type: "get",
+          }).then((res) => {
+            if (res.code == 0) {
+              tableData = res.data;
+              renderFun(res.data);
+            } else {
+              layer.msg("未查到数据！", { icon: 2, time: 2000 });
+            }
+          });
+        }
+
+        jq(document).on("click", "#cancleBtn", function () {
+          parent.layer.closeAll();
+          // parent.location.reload();
+        });
+
+        function jszb(a, b) {
+          let re = 0;
+          if (a != 0 && b != 0) {
+            re = ((a / b) * 100).toFixed(2);
+          }
+          return re;
+        }
+        // 渲染列表
+        function renderFun(data) {
+          let thsA = null,
+            thsB = null,
+            thsC = null;
+
+          let _data = data;
+          for (let v in _data) {
+            if (v) {
+              if (v == 1) {
+                thsA = _data[v];
+              }
+              if (v == 4) {
+                thsB = _data[v];
+              }
+              if (v == 5) {
+                thsC = _data[v];
+              }
+            }
+          }
+
+          let tableTitleA = tableTitle + "科一",
+            tableTitleB = tableTitle + "科四",
+            tableTitleC = tableTitle + "科五";
+
+          let tableAths = "<th style='font-weight:normal'>试题分类</th>",
+            tableBths = "<th style='font-weight:normal'>试题分类</th>",
+            tableCths = "<th style='font-weight:normal'>试题分类</th>",
+            tableAtds = "<tr><td>文字题/占比</td>",
+            tableAtds2 = "<tr><td>图片题/占比</td>",
+            tableAtds3 = "<tr><td>标准比例</td>",
+            tableAtds4 = "<tr><td>当前总数</td>",
+            tableAtds5 = "",
+            tableBtds = "<tr><td>文字题/占比</td>",
+            tableBtds2 = "<tr><td>图片题/占比</td>",
+            tableBtds3 = "<tr><td>标准比例</td>",
+            tableBtds4 = "<tr><td>当前总数</td>",
+            tableBtds5 = "",
+            tableCtds = "<tr><td>文字题/占比</td>",
+            tableCtds2 = "<tr><td>图片题/占比</td>",
+            tableCtds3 = "<tr><td>标准比例</td>",
+            tableCtds4 = "<tr><td>当前总数</td>",
+            tableCtds5 = "";
+          let atotal = 0,
+            btotal = 0,
+            ctotal = 0;
+
+          if (thsA) {
+            let astfls = thsA.stfls;
+            let lengtha = Object.keys(astfls).length;
+            jq("#tableATitle")
+              .empty()
+              .html(
+                '<th colspan="' +
+                  (lengtha * 2 + 1) +
+                  '">' +
+                  tableTitleA +
+                  "</th>"
+              );
+            for (let va in astfls) {
+              tableAths += "<th colspan='2'>" + va.toUpperCase() + "</th>";
+              let itemA = astfls[va];
+              let currImgCountZb = jszb(
+                  itemA.currImgCount,
+                  itemA.currTotalCount
+                ),
+                currNotImgCountZb = jszb(
+                  itemA.currNotImgCount,
+                  itemA.currTotalCount
+                ),
+                bzImgCountZb = jszb(itemA.bzImgCount, itemA.bzTotalCount),
+                bzNotImgCountZb = jszb(itemA.bzNotImgCount, itemA.bzTotalCount);
+
+              atotal += itemA.currTotalCount;
+              tableAtds +=
+                "<td width='100'>" +
+                itemA.currNotImgCount +
+                "</td><td width='100'>" +
+                currNotImgCountZb +
+                " %</td>";
+              tableAtds2 +=
+                "<td width='100'>" +
+                itemA.currImgCount +
+                "</td><td width='100'>" +
+                currImgCountZb +
+                " %</td>";
+              tableAtds3 +=
+                "<td colspan='2'>" +
+                bzNotImgCountZb +
+                "% / " +
+                bzImgCountZb +
+                "%</td>";
+              tableAtds4 +=
+                "<td colspan='2' class='" +
+                (itemA.minCount > itemA.currTotalCount ? "red-td" : "") +
+                "'>" +
+                itemA.currTotalCount +
+                (itemA.minCount > itemA.currTotalCount
+                  ? "（最小值：" + +itemA.minCount + "）"
+                  : "") +
+                "</td>";
+            }
+            tableAtds += "</tr>";
+            tableAtds2 += "</tr>";
+            tableAtds3 += "</tr>";
+            tableAtds4 += "</tr>";
+            let flaga = thsA.minCount > atotal;
+            tableAtds5 +=
+              "<tr><td>当前合计</td><td colspan='" +
+              lengtha * 2 +
+              "' class='" +
+              (flaga ? "red-td" : "") +
+              "'>" +
+              atotal;
+            if (flaga) {
+              tableAtds5 += "（最小值：" + thsA.minCount + "）";
+            }
+            tableAtds5 += "</td></tr>";
+
+            jq("#tableThsA").html(tableAths);
+            jq("#tableBodyA").html(
+              tableAtds + tableAtds2 + tableAtds3 + tableAtds4 + tableAtds5
+            );
+          } else {
+            jq("#tableATitle").html("");
+            jq("#tableThsA").html("");
+            jq("#tableBodyA").html("");
+          }
+
+          if (thsB) {
+            let bstfls = thsB.stfls;
+            let lengthb = Object.keys(bstfls).length;
+            jq("#tableBTitle")
+              .empty()
+              .html(
+                '<th colspan="' +
+                  (lengthb * 2 + 1) +
+                  '">' +
+                  tableTitleB +
+                  "</th>"
+              );
+            for (let va in bstfls) {
+              tableBths += "<th colspan='2'>" + va.toUpperCase() + "</th>";
+              let itemB = bstfls[va];
+              btotal += itemB.currTotalCount;
+              let currImgCountZb = jszb(
+                  itemB.currImgCount,
+                  itemB.currTotalCount
+                ),
+                currNotImgCountZb = jszb(
+                  itemB.currNotImgCount,
+                  itemB.currTotalCount
+                ),
+                bzImgCountZb = jszb(itemB.bzImgCount, itemB.bzTotalCount),
+                bzNotImgCountZb = jszb(itemB.bzNotImgCount, itemB.bzTotalCount);
+
+              tableBtds +=
+                "<td width='100'>" +
+                itemB.currNotImgCount +
+                "</td><td width='100'>" +
+                currNotImgCountZb +
+                " %</td>";
+              tableBtds2 +=
+                "<td width='100'>" +
+                itemB.currImgCount +
+                "</td><td width='100'>" +
+                currImgCountZb +
+                " %</td>";
+              tableBtds3 +=
+                "<td colspan='2'>" +
+                bzNotImgCountZb +
+                "% / " +
+                bzImgCountZb +
+                "%</td>";
+              tableBtds4 +=
+                "<td colspan='2' class='" +
+                (itemB.minCount > itemB.currTotalCount ? "red-td" : "") +
+                "'>" +
+                itemB.currTotalCount +
+                (itemB.minCount > itemB.currTotalCount
+                  ? "（最小值：" + itemB.minCount + "）"
+                  : "") +
+                "</td>";
+            }
+
+            tableBtds += "</tr>";
+
+            tableBtds2 += "</tr>";
+            tableBtds3 += "</tr>";
+            tableBtds4 += "</tr>";
+            let flagb = thsB.minCount > btotal;
+            tableBtds5 +=
+              "<tr><td>当前合计</td><td colspan='" +
+              lengthb * 2 +
+              "' class='" +
+              (flagb ? "red-td" : "") +
+              "'>" +
+              btotal;
+            if (flagb) {
+              tableBtds5 += "（最小值：" + thsB.minCount + "）";
+            }
+            tableBtds5 += "</td></tr>";
+
+            jq("#tableThsB").html(tableBths);
+            jq("#tableBodyB").html(
+              tableBtds + tableBtds2 + tableBtds3 + tableBtds4 + tableBtds5
+            );
+          } else {
+            jq("#tableBTitle").html("");
+            jq("#tableThsB").html("");
+            jq("#tableBodyB").html("");
+          }
+
+          if (thsC) {
+            let cstfls = thsC.stfls;
+            let lengthc = Object.keys(cstfls).length;
+            jq("#tableCTitle")
+              .empty()
+              .html(
+                '<th colspan="' +
+                  (lengthc * 2 + 1) +
+                  '">' +
+                  tableTitleC +
+                  "</th>"
+              );
+            for (let va in cstfls) {
+              tableCths += "<th colspan='2'>" + va.toUpperCase() + "</th>";
+              let itemC = cstfls[va];
+              ctotal += itemC.currTotalCount;
+              let currImgCountZb = jszb(
+                  itemC.currImgCount,
+                  itemC.currTotalCount
+                ),
+                currNotImgCountZb = jszb(
+                  itemC.currNotImgCount,
+                  itemC.currTotalCount
+                ),
+                bzImgCountZb = jszb(itemC.bzImgCount, itemC.bzTotalCount),
+                bzNotImgCountZb = jszb(itemC.bzNotImgCount, itemC.bzTotalCount);
+
+              tableCtds +=
+                "<td width='100'>" +
+                itemC.currNotImgCount +
+                "</td><td width='100'>" +
+                currNotImgCountZb +
+                " %</td>";
+              tableCtds2 +=
+                "<td width='100'>" +
+                itemC.currImgCount +
+                "</td><td width='100'>" +
+                currImgCountZb +
+                " %</td>";
+              tableCtds3 +=
+                "<td colspan='2'>" +
+                bzNotImgCountZb +
+                "% / " +
+                bzImgCountZb +
+                "%</td>";
+              tableCtds4 +=
+                "<td colspan='2' class='" +
+                (itemC.minCount > itemC.currTotalCount ? "red-td" : "") +
+                "'>" +
+                itemC.currTotalCount +
+                (itemC.minCount > itemC.currTotalCount
+                  ? "（最小值：" + itemC.minCount + "）"
+                  : "") +
+                "</td>";
+            }
+
+            tableCtds += "</tr>";
+
+            tableCtds2 += "</tr>";
+            tableCtds3 += "</tr>";
+            tableCtds4 += "</tr>";
+            let flagc = thsC.minCount > ctotal;
+            tableCtds5 +=
+              "<tr><td>当前合计</td><td colspan='" +
+              lengthc * 2 +
+              "' class='" +
+              (flagc ? "red-td" : "") +
+              "'>" +
+              ctotal;
+            if (flagc) {
+              tableCtds5 += "（最小值：" + thsC.minCount + "）";
+            }
+            tableCtds5 += "</td></tr>";
+
+            jq("#tableThsC").html(tableCths);
+            jq("#tableBodyC").html(
+              tableCtds + tableCtds2 + tableCtds3 + tableCtds4 + tableCtds5
+            );
+          } else {
+            jq("#tableCTitle").html("");
+            jq("#tableThsC").html("");
+            jq("#tableBodyC").html("");
+          }
+        }
+      })();
+    </script>
+  </body>
+</html>

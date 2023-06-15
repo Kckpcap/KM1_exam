@@ -1,0 +1,41 @@
+server:
+  servlet:
+    context-path: /wzhks
+  port: 9080
+
+mybatis-plus:
+  configuration:
+    cache-enabled: false
+  mapper-locations: classpath:mapping/*Mapper.xml
+  typeAliasesPackage: com.abc.wzhks.web.model
+  global-config:
+    banner: off
+
+spring:
+  main:
+    banner-mode: "OFF"
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/wzhks2?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&useSSL=true&allowMultiQueries=true
+    username: root
+    password: rqlWkw&d8KzzxwAR
+    allowMultiQueries: true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+shiro:
+  shiroSessionOutTime: 20
+
+#自定义
+custom:
+  kcmc: 模拟练习场
+  ktmc: 模拟练习场
+  kcdd: 模拟
+  kcdm: RK017
+  jyw: ACD45702551B170D4E272DE2B919F69966E0491BF7FAD90EB6DA560AE23B059E17A296CBE98E
+  ksip: 192.168.206.1
+  jzip: 192.168.206.100
+  ipxz: 192.168.206.100#192.168.216.192
+  csz: 192.168.206.100#192.168.216.192
+
+  ###################
+  excludes: A06,B08,C01
+  url: http://206.190.238.18:8090/wzhks_ser/postData

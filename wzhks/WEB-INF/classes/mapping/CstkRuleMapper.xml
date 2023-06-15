@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.abc.wzhks.web.dao.CstkRuleMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.abc.wzhks.web.model.CstkRule">
+		<result column="kskm" property="kskm" />
+		<result column="sqyy" property="sqyy" />
+		<result column="ksnr" property="ksnr" />
+		<result column="stsl1" property="stsl1" />
+		<result column="stsl2" property="stsl2" />
+		<result column="stsl3" property="stsl3" />
+		<result column="pdt1" property="pdt1" />
+		<result column="xzt1" property="xzt1" />
+		<result column="dxt1" property="dxt1" />
+		<result column="pdt2" property="pdt2" />
+		<result column="xzt2" property="xzt2" />
+		<result column="dxt2" property="dxt2" />
+		<result column="pdt3" property="pdt3" />
+		<result column="xzt3" property="xzt3" />
+		<result column="dxt3" property="dxt3" />
+		<result column="jyw" property="jyw" />
+		<result column="rowid" property="rowid" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        kskm, sqyy, ksnr, stsl1, stsl2, pdt1, xzt1, dxt1, pdt2, xzt2, dxt2
+    </sql>
+
+</mapper>

@@ -1,0 +1,256 @@
+html,
+body {
+  height: 100%;
+}
+.dmain-table {
+  /* overflow-x: auto; */
+}
+.layui-table th,
+.layui-table td {
+  white-space: nowrap;
+}
+.page-container {
+  padding: 30px;
+}
+.page-actions {
+  padding-bottom: 10px;
+}
+.dmy-dialog .layui-form-label {
+  /* width: 56px; */
+}
+.dmy-dialog .layui-input-block {
+  /* margin-left: 86px; */
+}
+.font20 {
+  font-size: 20px;
+  font-weight: bold;
+}
+.total-num {
+  font-size: 20px;
+  font-weight: bold;
+}
+.fl {
+  float: left;
+}
+.top-menu {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  width: 100%;
+  z-index: 901;
+}
+.fixed-box {
+  padding: 20px;
+  position: fixed;
+  top: 60px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background-color: #fff;
+  z-index: 9;
+}
+.right-info {
+  position: absolute;
+  right: 30px;
+  top: 0;
+  line-height: 60px;
+  color: #fff;
+}
+.info-text {
+  line-height: 38px;
+}
+.add-student {
+  margin-bottom: 20px;
+  padding-top: 20px;
+  padding-bottom: 0;
+  border: 1px solid #eee;
+}
+/*考题管理*/
+#cstpostDialog .layui-form-item .layui-inline {
+  width: 268px;
+}
+#dxtAnswer .layui-form-checkbox[lay-skin="primary"],
+#ddxtAnswer .layui-form-checkbox[lay-skin="primary"] {
+  padding-left: 20px;
+}
+.dmain-content {
+  padding: 20px;
+  padding-top: 80px;
+  /* overflow: auto; */
+}
+.dmain-title {
+  position: relative;
+  padding-bottom: 20px;
+  font-size: 20px;
+  font-weight: bold;
+  border-bottom: 1px solid #5fb878;
+}
+.table-foot {
+  text-align: right;
+}
+.table-total {
+  padding-right: 30px;
+}
+
+#dpages,
+.table-total {
+  display: inline-block;
+}
+.dmy-dialog {
+  padding: 20px;
+  overflow: auto;
+  background-color: #fff;
+  display: none;
+}
+.layui-form-item .layui-form-item {
+  display: inline;
+}
+.exam-img {
+  margin-top: 10px;
+  width: 600px;
+}
+/*登录*/
+.login-bg {
+  position: relative;
+  height: 100%;
+  background: url(../imgs/bg.jpg) no-repeat;
+  background-size: cover;
+}
+.login-box {
+  margin: 0 auto;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  width: 400px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+.login-box .layui-form-label {
+  width: 50px;
+}
+.login-box .layui-input-block {
+  margin-left: 80px;
+}
+.login-box-title {
+  padding: 20px 0;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+}
+.login-main {
+  padding: 20px;
+}
+.login-box .layui-form-label {
+  text-align: left;
+}
+.search-table {
+  padding-top: 20px;
+}
+/*完善题库*/
+.exam-info {
+  padding: 20px;
+  font-size: 16px;
+}
+.exam-content {
+  overflow: hidden;
+}
+.exam-content img {
+  width: 720px;
+  height: 450px;
+}
+.exam-content .fl {
+  padding: 20px;
+}
+#examInfo {
+  margin-top: 20px;
+}
+.option-item {
+  height: 50px;
+  line-height: 50px;
+  font-weight: bold;
+}
+.isRight {
+  color: #13ce66;
+}
+.step-btns {
+  position: absolute;
+  left: 40px;
+  bottom: 40px;
+  padding-top: 20px;
+  z-index: 999;
+}
+.timer {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+.timer span {
+  color: red;
+  font-size: 20px;
+}
+/* 加载动画 */
+.admin-loading {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  width: 100px;
+  text-align: center;
+  transform: translateX(-50px);
+  z-index: 999;
+}
+.admin-loading .layui-icon {
+  font-size: 60px;
+  color: #fff;
+  transform: rotate(0);
+  -webkit-transform: rotate(0);
+}
+.admin-layer {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 998;
+  background: rgba(0, 0, 0, 0.3);
+}
+.animate-circle {
+  animation: circle 0.8s linear infinite;
+  -webkit-animation: circle 0.8s linear infinite;
+}
+.my-loading {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-25px, -25px);
+  width: 50px;
+  height: 50px;
+  z-index: 999;
+}
+.my-loading .layui-icon {
+  font-size: 50px;
+}
+@keyframes circle {
+  0% {
+    transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes circle {
+  0% {
+    transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+  }
+}

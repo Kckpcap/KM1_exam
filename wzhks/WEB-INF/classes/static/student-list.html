@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate" />
+    <meta http-equiv="expires" content="0" />
+    <title>学员管理</title>
+    <link rel="stylesheet" href="./static/layui/css/layui.css" />
+    <link rel="stylesheet" href="./static/css/base.css" />
+    <script src="./static/layui/layui.all.js"></script>
+    <style>
+      .sort-span {
+        padding-right: 5px;
+        display: inline-block;
+        vertical-align: middle;
+      }
+      .layui-icon-triangle-d {
+        display: block;
+        line-height: 16px;
+      }
+      .layui-icon-triangle-d.daoxu {
+        transform: rotate(180deg);
+      }
+      .layui-icon-triangle-d.zhengxu,
+      .layui-icon-triangle-d.daoxu {
+        font-size: 16px;
+        display: none;
+      }
+      .layui-icon-triangle-d.on {
+        color: #1e9fff;
+      }
+      .sortbysex,
+      .sortbychexing,
+      .sortbykemu,
+      .sortbyksyy,
+      .sortbylevel,
+      .sortbytime {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dmain-container">
+      <div class="top-menu">
+        <ul class="layui-nav" lay-filter="">
+          <li class="layui-nav-item">
+            <a href="./exam-list.html">试题管理</a>
+          </li>
+          <li class="layui-nav-item">
+            <a href="./check.html">试题检查</a>
+          </li>
+          <li class="layui-nav-item">
+            <a href="./machine.html">练习机管理</a>
+          </li>
+          <li class="layui-nav-item layui-this">
+            <a href="./student-list.html">学员列表</a>
+          </li>
+          <li class="layui-nav-item"><a href="./monitor.html">监控</a></li>
+          <li class="layui-nav-item a-log"><a href="./log.html">日志</a></li>
+          <li class="layui-nav-item"><a href="./login.html">退出</a></li>
+        </ul>
+        <div class="right-info"></div>
+      </div>
+      <div class="dmain-content">
+        <div class="dmain-title">学员列表</div>
+        <div class="search-table">
+          <form class="layui-form" action="" lay-filter="searchForm">
+            <div class="layui-form-item">
+              <div class="layui-inline">
+                <label class="layui-form-label">身份证</label>
+                <div class="layui-input-inline">
+                  <input
+                    type="text"
+                    name="studentIdcard"
+                    maxlength="18"
+                    placeholder="请输入身份证"
+                    autocomplete="off"
+                    class="layui-input"
+                  />
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">姓名</label>
+                <div class="layui-input-inline">
+                  <input
+                    type="text"
+                    name="studentName"
+                    maxlength="50"
+                    placeholder="请输入姓名"
+                    autocomplete="off"
+                    class="layui-input"
+                  />
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">车型</label>
+                <div class="layui-input-inline">
+                  <select
+                    name="studentCarType"
+                    lay-filter="studentCarType"
+                    id="sycxList2"
+                  >
+                    <option value=""></option>
+                  </select>
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">科目</label>
+                <div class="layui-input-inline">
+                  <select
+                    name="studentSubject"
+                    id="kskmList"
+                    lay-filter="studentSubject"
+                  >
+                    <option value=""></option>
+                    <!-- <option value="1">科目一</option>
+                    <option value="4">科目四</option>
+                    <option value="5">科目五</option> -->
+                  </select>
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">学员级别</label>
+                <div class="layui-input-inline">
+                  <select
+                    name="studentLevel"
+                    id="studentLevelId"
+                    lay-filter="studentType"
+                  >
+                    <option value=""></option>
+                  </select>
+                </div>
+              </div>
+              <!-- <div class="layui-inline">
+                <label class="layui-form-label">申请原因</label>
+                <div class="layui-input-block">
+                  <select
+                    name="studentSqyy"
+                    lay-filter="studentSqyy"
+                    id="ksyyList2"
+                  >
+                    <option value=""></option>
+                  </select>
+                </div>
+              </div> -->
+
+              <div class="layui-inline">
+                <button class="layui-btn" lay-submit lay-filter="searchForm">
+                  查询
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="page-actions">
+          <a href="#" id="addExam" class="layui-btn layui-btn-sm">添加学员</a>
+          <a href="#" id="deleteBatches" class="layui-btn layui-btn-sm"
+            >批量删除</a
+          >
+          <a
+            href="#"
+            id="clearAll"
+            class="layui-btn layui-btn-sm layui-btn-danger"
+            >一键清空</a
+          >
+          <a
+            href=""
+            download=""
+            id="downloadMB"
+            class="layui-btn layui-btn-sm"
+            >下载模板</a
+          >
+          <a href="#" id="uploadBtn" class="layui-btn layui-btn-sm"
+            ><i class="layui-icon">&#xe67c;</i>导入</a
+          >
+        </div>
+        <!-- 添加学员 begin-->
+        <div class="add-student" style="display: none">
+          <form class="layui-form" action="" lay-filter="addForm">
+            <div class="layui-form-item">
+              <div class="layui-inline">
+                <label class="layui-form-label">身份证</label>
+                <div class="layui-input-block">
+                  <input
+                    type="text"
+                    name="studentIdcard"
+                    id="idCardDom"
+                    maxlength="18"
+                    required
+                    lay-verify="required|idcard"
+                    placeholder="请输入身份证"
+                    autocomplete="off"
+                    class="layui-input"
+                  />
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">姓名</label>
+                <div class="layui-input-block">
+                  <input
+                    type="text"
+                    lay-verify="required"
+                    name="studentName"
+                    required
+                    placeholder="请输入"
+                    autocomplete="off"
+                    class="layui-input"
+                  />
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">级别</label>
+                <div class="layui-input-block">
+                  <select
+                    name="studentLevel"
+                    lay-verify="required"
+                    id="studentLevelId1"
+                    lay-filter="studentType"
+                  >
+                    <option value=""></option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="layui-form-item">
+              <div class="layui-inline">
+                <label class="layui-form-label">车型</label>
+                <div class="layui-input-block" style="width: 182px">
+                  <select
+                    name="studentCarType"
+                    lay-filter="studentCarType"
+                    id="sycxList1"
+                    lay-verify="required"
+                  >
+                    <option value=""></option>
+                  </select>
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">科目</label>
+                <div class="layui-input-block" style="width: 182px">
+                  <select
+                    name="studentSubject"
+                    lay-verify="required"
+                    lay-filter="studentSubject"
+                    id="kskmList1"
+                  >
+                    <option value=""></option>
+                    <!-- <option value="1">科目一</option>
+                    <option value="4">科目四</option>
+                    <option value="5">科目五</option> -->
+                  </select>
+                </div>
+              </div>
+
+              <div class="layui-inline">
+                <label class="layui-form-label">考试原因</label>
+                <div class="layui-input-block" style="width: 182px">
+                  <select
+                    name="studentSqyy"
+                    lay-verify="required"
+                    lay-filter="studentSqyy"
+                    id="ksyyList"
+                  >
+                    <option value=""></option>
+                  </select>
+                </div>
+              </div>
+              <!-- <div class="layui-inline">
+                <label class="layui-form-label">是否启用</label>
+                <div class="layui-input-block">
+                  <input
+                    type="radio"
+                    name="studentEnable"
+                    value="1"
+                    title="启用"
+                  />
+                  <input
+                    type="radio"
+                    name="studentEnable"
+                    value="2"
+                    title="禁用"
+                  />
+                </div>
+              </div> -->
+              <div class="layui-inline">
+                <div class="layui-input-block" style="margin-left: 0">
+                  <button
+                    class="layui-btn"
+                    id="formAddBtn"
+                    lay-submit
+                    lay-filter="formAdd"
+                  >
+                    立即提交
+                  </button>
+                  <button
+                    type="button"
+                    id="cancleAddBtn"
+                    class="layui-btn layui-btn-primary"
+                  >
+                    关闭
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <!-- 添加学员 end -->
+        <div class="dmain-table">
+          <table class="layui-table">
+            <colgroup>
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+            </colgroup>
+            <thead>
+              <tr>
+                <th>
+                  <input
+                    type="checkbox"
+                    id="checkAll"
+                    name=""
+                    title="选择"
+                    lay-skin="primary"
+                  />
+                </th>
+                <th>序号</th>
+                <th>身份证</th>
+                <th>姓名</th>
+                <th class="sortbysex" data-type="1">
+                  <span class="sort-span">性别</span
+                  ><span class="sort-span"
+                    ><i
+                      class="layui-icon layui-icon-triangle-d sexdaoxu daoxu"
+                      data-type="2"
+                    ></i
+                    ><i
+                      class="
+                        layui-icon layui-icon-triangle-d
+                        sexzhengxu
+                        zhengxu
+                      "
+                      data-type="1"
+                    ></i
+                  ></span>
+                </th>
+                <th class="sortbychexing">
+                  <span class="sort-span">车型</span
+                  ><span class="sort-span"
+                    ><i
+                      class="
+                        layui-icon layui-icon-triangle-d
+                        chexingdaoxu
+                        daoxu
+                      "
+                      data-type="2"
+                    ></i
+                    ><i
+                      class="
+                        layui-icon layui-icon-triangle-d
+                        chexingzhengxu
+                        zhengxu
+                      "
+                      data-type="1"
+                    ></i
+                  ></span>
+                </th>
+                <th class="sortbykemu">
+                  <span class="sort-span">科目</span
+                  ><span class="sort-span"
+                    ><i
+                      class="layui-icon layui-icon-triangle-d kemudaoxu daoxu"
+                      data-type="2"
+                    ></i
+                    ><i
+                      class="
+                        layui-icon layui-icon-triangle-d
+                        kemuzhengxu
+                        zhengxu
+                      "
+                      data-type="1"
+                    ></i
+                  ></span>
+                </th>
+                <th class="sortbyksyy">
+                  <span class="sort-span">考试原因</span
+                  ><span class="sort-span"
+                    ><i
+                      class="layui-icon layui-icon-triangle-d ksyydaoxu daoxu"
+                      data-type="2"
+                    ></i
+                    ><i
+                      class="
+                        layui-icon layui-icon-triangle-d
+                        ksyyzhengxu
+                        zhengxu
+                      "
+                      data-type="1"
+                    ></i
+                  ></span>
+                </th>
+                <th class="sortbylevel">
+                  <span class="sort-span">学员级别</span
+                  ><span class="sort-span"
+                    ><i
+                      class="layui-icon layui-icon-triangle-d leveldaoxu daoxu"
+                      data-type="2"
+                    ></i
+                    ><i
+                      class="
+                        layui-icon layui-icon-triangle-d
+                        levelzhengxu
+                        zhengxu
+                      "
+                      data-type="1"
+                    ></i
+                  ></span>
+                </th>
+                <th class="sortbytime">
+                  <span class="sort-span">添加时间</span
+                  ><span class="sort-span"
+                    ><i
+                      class="layui-icon layui-icon-triangle-d timedaoxu daoxu"
+                      data-type="2"
+                    ></i
+                    ><i
+                      class="
+                        layui-icon layui-icon-triangle-d
+                        timezhengxu
+                        zhengxu
+                      "
+                      data-type="1"
+                    ></i
+                  ></span>
+                </th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+        <!-- <div id="dpages"></div> -->
+      </div>
+    </div>
+    <div class="my-loading" style="display: none">
+      <i
+        class="
+          layui-icon
+          layui-icon-loading-1
+          layui-anim
+          layui-anim-rotate
+          layui-anim-loop
+        "
+      ></i>
+    </div>
+    <!-- 编辑 start-->
+    <div class="dmy-dialog" id="postDialog">
+      <form class="layui-form" action="" lay-filter="postForm">
+        <div class="layui-form-item">
+          <label class="layui-form-label">身份证</label>
+          <div class="layui-input-block">
+            <input
+              type="text"
+              name="studentIdcard"
+              maxlength="18"
+              required
+              lay-verify="required|idcard"
+              placeholder="请输入身份证"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <label class="layui-form-label">姓名</label>
+          <div class="layui-input-block">
+            <input
+              type="text"
+              name="studentName"
+              required
+              lay-verify="required"
+              placeholder="请输入"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <label class="layui-form-label">车型</label>
+          <div class="layui-input-block">
+            <select
+              name="studentCarType"
+              lay-verify="required"
+              lay-filter="studentCarType"
+              id="sycxList"
+            >
+              <option value=""></option>
+            </select>
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <label class="layui-form-label">通过科目</label>
+          <div class="layui-input-block">
+            <select
+              name="studentSubject"
+              lay-verify="required"
+              id="kskmList2"
+              lay-filter="studentSubject"
+            >
+              <option value=""></option>
+              <!-- <option value="1">科目一</option>
+              <option value="4">科目四</option>
+              <option value="5">科目五</option> -->
+            </select>
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <label class="layui-form-label">考试原因</label>
+          <div class="layui-input-block">
+            <select
+              name="studentSqyy"
+              lay-filter="studentSqyy"
+              lay-verify="required"
+              id="ksyyList1"
+            >
+              <option value=""></option>
+            </select>
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <label class="layui-form-label">学员级别</label>
+          <div class="layui-input-block">
+            <select
+              name="studentLevel"
+              id="studentLevelId2"
+              lay-verify="required"
+              lay-filter="studentType"
+            >
+              <option value=""></option>
+            </select>
+          </div>
+        </div>
+        <div class="layui-form-item" style="text-align: center">
+          <div class="layui-input-block" style="margin-left: 0">
+            <button
+              class="layui-btn"
+              id="formEditBtn"
+              lay-submit
+              lay-filter="formEdit"
+            >
+              提交编辑
+            </button>
+            <button
+              type="button"
+              id="cancleBtn"
+              class="layui-btn layui-btn-primary"
+            >
+              取消
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <!-- 编辑 end-->
+
+
+    <!-- 上机 start-->
+    <div class="dmy-dialog" style="height:300px;"  id="shangjiDialog">
+      <form class="layui-form" action="" lay-filter="shangjiForm">
+
+        <div class="layui-form-item">
+          <label class="layui-form-label">房间</label>
+          <div class="layui-input-block">
+            <select
+                    name="roomId"
+                    lay-verify="required"
+                    lay-filter="roomId"
+                    id="roomList"
+            >
+              <option value="1">R01</option>
+              <option value="2">R02</option>
+              <option value="3">R03</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="layui-form-item" style="text-align: center">
+          <div class="layui-input-block" style="margin-left: 0">
+            <button
+                    class="layui-btn"
+                    id="formShangjiBtn"
+                    lay-submit
+                    lay-filter="formShangji"
+            >
+              提交
+            </button>
+<!--            <button-->
+<!--                    type="button"-->
+<!--                    id="cancleBtn"-->
+<!--                    class="layui-btn layui-btn-primary"-->
+<!--            >-->
+<!--              取消-->
+<!--            </button>-->
+          </div>
+        </div>
+      </form>
+    </div>
+    <!-- 上机 end-->
+
+
+    <!-- 修改登录人密码 start-->
+    <div class="dmy-dialog" id="userPwdDialog">
+      <form class="layui-form" action="" lay-filter="userpwdForm">
+        <div class="layui-form-item">
+          <label class="layui-form-label">用户名</label>
+          <div class="layui-input-block">
+            <input
+              type="text"
+              name="userName"
+              required
+              lay-verify="required"
+              placeholder="请输入"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <label class="layui-form-label">原密码</label>
+          <div class="layui-input-block">
+            <input
+              type="password"
+              name="oldPwd"
+              required
+              lay-verify="required|passwd2"
+              placeholder="请输入"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <label class="layui-form-label">新密码</label>
+          <div class="layui-input-block">
+            <input
+              type="password"
+              name="userPwd2"
+              required
+              lay-verify="required|passwd2"
+              placeholder="请输入"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <label class="layui-form-label">确认密码</label>
+          <div class="layui-input-block">
+            <input
+              type="password"
+              name="checkPwd2"
+              required
+              lay-verify="required|checkpwd2"
+              placeholder="请输入"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </div>
+        </div>
+        <div class="layui-form-item" style="text-align: center">
+          <div class="layui-input-block" style="margin-left: 0">
+            <button
+              class="layui-btn"
+              id="userPwdBtn"
+              lay-submit
+              lay-filter="userpwdForm"
+            >
+              立即提交
+            </button>
+            <button type="button" class="cancleBtn layui-btn layui-btn-primary">
+              取消
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <!-- 修改登录人密码 end-->
+    <script src="./static/js/md5.js"></script>
+    <script src="./static/js/utils.js"></script>
+    <script type="text/javascript" language="javascript">
+      !(function () {
+
+        getStatus(); //获取状态
+        //初始化数据
+        var options = {
+          url: "/student/getList",
+          tableQuery: {
+            studentIdcard: "", //身份证
+            studentName: "", //姓名
+            studentLevel: "", //学员级别（1~5）
+            studentCarType: "", //车型
+            studentSubject: "", //科目
+            page: 1,
+            size: 20,
+          },
+          suc: renderFun, //渲染dom函数
+        };
+        var ksyyList = window.ADMIN_SETTING.sqyyList,
+          sycxList = window.ADMIN_SETTING.sycxList,
+          kmArrs = window.ADMIN_SETTING.subjectArrs;
+        var tableData = [],
+          total = 0; //列表数据
+        var isSexSort = 1,
+          isChexingSort = 1,
+          isKemuSort = 1,
+          isKsyySort = 1,
+          isStudentLevelSort = 1,
+          isTimeSort = 1;
+        var currnetData = null; //当前选中的row
+
+        var userType = JSON.parse(localStorage.getItem("kaoshi1")).userType; //当前登录用户角色
+
+        var laypage = layui.laypage,
+          layer = layui.layer,
+          laydate = layui.laydate,
+          upload = layui.upload,
+          form = layui.form;
+        var jq = layui.$;
+
+        let letterType = window.ADMIN_SETTING.letter;
+        let abtn = jq("#downloadMB")
+        abtn.attr('href','/wzhks/static/'+letterType+'.xlsx')
+
+        // 加载考试原因--查询
+        // addOptions("#ksyyList2", ksyyList);
+
+        // 加载适用车型
+        addOptions("#sycxList2", sycxList);
+
+        // 加载考试原因 - 添加
+        addOptions("#ksyyList", ksyyList);
+
+        // 加载考试原因 - 编辑
+        addOptions("#ksyyList1", ksyyList);
+
+        // 加载适用车型-- 编辑
+        addOptions("#sycxList", sycxList);
+
+        // 加载适用车型 -- 添加
+        addOptions("#sycxList1", sycxList);
+        // 加载考试科目
+        addOptions("#kskmList", kmArrs);
+        addOptions("#kskmList1", kmArrs);
+        addOptions("#kskmList2", kmArrs);
+        // 加载学员级别
+        var levelsArr = ADMIN_SETTING.levelsArr.map((item) => {
+          if (item.label != "全部") {
+            item.label = item.label.substr(1);
+          }
+          return item;
+        });
+        addOptions("#studentLevelId", levelsArr);
+        addOptions("#studentLevelId1", levelsArr);
+        addOptions("#studentLevelId2", levelsArr);
+
+        form.render(); //加载表单元素
+
+        var boySet = new Set();
+        var girlSet = new Set();
+
+        // 查询
+        getList(options, null);
+        form.on("submit(searchForm)", function (data) {
+          options.tableQuery.page = 1;
+          options.tableQuery = Object.assign(options.tableQuery, data.field);
+
+          getList(options, null);
+          return false;
+        });
+
+        // 新增
+        jq("#addExam").on("click", function () {
+          jq(".add-student").show();
+
+          form.val("addForm", {
+            studentIdcard: "",
+            studentLevel: ADMIN_SETTING.letter + "01",
+            studentName: "",
+            studentCarType: "",
+            studentSubject: "",
+            studentSqyy: "",
+          });
+        });
+        // 编辑
+        jq(document).on("click", ".editRow", function () {
+          let id = jq(this).context.dataset.id;
+          currnetData = tableData.filter((item) => {
+            return item.studentId == id;
+          });
+          layer.open({
+            type: 1,
+            title: "编辑学员",
+            content: jq("#postDialog"),
+            area: ["640px", "auto"], //弹窗尺寸
+            success: function (layero, index) {
+              form.val("postForm", currnetData[0]);
+            },
+          });
+        });
+        // 上机
+        jq(document).on("click", ".shangjiRow", function () {
+          let id = jq(this).context.dataset.id;
+          currnetData = tableData.filter((item) => {
+            return item.studentId == id;
+          });
+          layer.open({
+            type: 1,
+            title: "学员上机",
+            content: jq("#shangjiDialog"),
+            area: ["640px", "300px"], //弹窗尺寸
+            success: function (layero, index) {
+            },
+          });
+        });
+
+        //新增表单内容提交
+        form.on("submit(formAdd)", function (data) {
+          let datas = data.field;
+          datas.studentEnable = 1;
+          ajaxPromise({
+            url: "/student/add",
+            datas: JSON.stringify(datas),
+            type: "post",
+          }).then((res) => {
+            layer.msg("操作成功！", { icon: 1, time: 2000 });
+            form.val("addForm", {
+              studentIdcard: "",
+              studentLevel: ADMIN_SETTING.letter + "01",
+              studentName: "",
+              studentCarType: "",
+              studentSubject: "",
+              studentSqyy: "",
+            });
+            getList(options, null);
+          });
+          return false;
+        });
+        // 编辑表单内容提交
+        form.on("submit(formEdit)", function (data) {
+          let datas = data.field;
+          datas.studentId = currnetData[0].studentId;
+          datas.studentType = data.field.studentType == "on" ? 1 : 0;
+          ajaxPromise({
+            url: "/student/edit",
+            datas: JSON.stringify(datas),
+            type: "post",
+          }).then((res) => {
+            layer.msg("操作成功！", { icon: 1, time: 2000 });
+            getList(options, null);
+          });
+          parent.layer.closeAll();
+
+          return false;
+        });
+
+
+        // 上机表单内容提交
+        form.on("submit(formShangji)", function (data) {
+          let datas = data.field;
+          datas.studentId = currnetData[0].studentId;
+          ajaxPromise({
+            url: "/exam/getKsjh",
+            datas: JSON.stringify({
+              roomId:datas.roomId,
+              studentIdcard:currnetData[0].studentIdcard,
+              studentPic:"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U5JUU8o5vX7Q8lCmPn0Lp/jjWCckUtpz5tCdoNvkFJCDxIPP0gk4e4cKs7kuI2PryAZ9QTO63zTKYPyvrPb7W55hHKgDYbPChFaDWWRM+zV1jKwXoMB7eJV8G+vKM878ldOxX2pdBUjKs6XL5LyglR1XGvo5uLGkteyfiIMAVAToJKL+GBuU2YOnLwJyBmuks9F4PmdIfbUOcQM3n/bKGh0Zzj2Scef7SfBV65Su9Km3uehhEuxB+YnJGVA9LiWYKwd0EgAMg+r/AP/aAAwDAQACAAMAAAAQ888888oFFJOnI8888888888888MH8s888888888888888zR8888888888884uPAt3/6w888888884NaXc7YJux98888884ALY996K8rJh988888kEuQMC8+cwENc88884BnAIswJB8048d58888M488884VA040DG8888df8+pxxxivwoFe84wgbePQOsAAAwQwa08oc88BZtsPC8P4cc488ocloMsV1+8++4E8u888cGDzu8MY824kE988888sDDAIm3DSDY5U8888887qDU+ZrmvFCa888888snJe86Wz0/DY8888888oBzU88c84x7c888888oAhw088kja8o888888riAtr4IcnGUs888888krDDH6iHXc88888888IcICalJdu8888888884k9Apk5Yc888888888sMUo8A0sc88888/8QAKBEBAAICAQQBAwUBAQAAAAAAAQARITFBECBRYTCRobFAcYHR4cHx/9oACAEDAQE/EO8gyrlMz+g0gX9CG0St/MAtUR5I9QXYomEVQvHUAtc9TyJ8eFZi0P8AiBf29AHkgUURMZnjQ5lVk+6BXsfgrW5faYqth10QgHEIzjoTMCQ6zJPROSAND3O1FermF0V1IBqvCGLy7KBV+UvPDruV50IzvntoyvyjI2DfbxNvMvtsn6hrtJjtMVaejtoX1HAc9ErbTjB/M/rRCbLE6WI3zQTP9zBg1c04KD12j17X1g034gcoYZiBM9LmOmJiriDXyJ3VBviVfLmIC7bgzJepk6P2gDhwzAZqgRZu8BGQ8/3MR9EUldz9ha7botjVFj7om6uHh/3o7E/pN6TsIpV/EsTiQxAFHbgJl0uZLwTcZtRuDB4CxaXiCcoYSs33MNDGPSAgs8eYYWP1IZEDI2a3Q+wZ4Mmm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"
+            }),
+            type: "post",
+          }).then((res) => {
+            layer.msg("操作成功！", { icon: 1, time: 2000 });
+            getList(options, null);
+          });
+          parent.layer.closeAll();
+
+          return false;
+        });
+
+
+
+
+        // 删除
+        jq(document).on("click", ".delrow", function (e) {
+          let id = e.target.dataset.id;
+          layer.confirm("确认删除？", function (index) {
+            ajaxPromise({
+              url: "/student/del",
+              datas: JSON.stringify({ studentId: id }),
+              type: "post",
+            }).then((res) => {
+              layer.msg("操作成功！", { icon: 1, time: 2000 });
+              getList(options, null);
+            });
+            layer.close(index);
+          });
+        });
+
+        jq(document).on("click", "#cancleBtn", function () {
+          parent.layer.closeAll();
+          // parent.location.reload();
+        });
+        jq("#cancleAddBtn").click(function () {
+          jq(".add-student").hide();
+        });
+
+        // 按性别排序
+        jq(".sortbysex").click(function (e) {
+          let type = isSexSort == 1 ? 2 : 1;
+          isSexSort = type;
+          sortBySex(type);
+        });
+        // 按车型排序
+        jq(".sortbychexing").click(function (e) {
+          let type = isChexingSort == 1 ? 2 : 1;
+          isChexingSort = type;
+          sortByChexing(type);
+        });
+        // 按科目排序
+        jq(".sortbykemu").click(function (e) {
+          let type = isKemuSort == 1 ? 2 : 1;
+          isKemuSort = type;
+          sortByKemu(type);
+        });
+        // 按考试原因排序
+        jq(".sortbyksyy").click(function (e) {
+          let type = isKsyySort == 1 ? 2 : 1;
+          isKsyySort = type;
+          sortByKsyy(type);
+        });
+        // 按学员级别排序
+        jq(".sortbylevel").click(function (e) {
+          let type = isStudentLevelSort == 1 ? 2 : 1;
+          isStudentLevelSort = type;
+          sortByLevel(type);
+        });
+        // 按添加时间排序
+        jq(".sortbytime").click(function (e) {
+          let type = isTimeSort == 1 ? 2 : 1;
+          isTimeSort = type;
+          sortByTime(type);
+        });
+
+        // 一键清空
+        jq("#clearAll").click(function (e) {
+          layer.confirm("确认清空所有数据？", function (index) {
+            ajaxPromise({
+              url: "/student/clear",
+              datas: {},
+              type: "post",
+            }).then((res) => {
+              layer.msg("操作成功！", { icon: 1, time: 2000 });
+              getList(options, null);
+            });
+            layer.close(index);
+          });
+        });
+        // 已选id
+        var selectedLogIds = new Set();
+        jq("#deleteBatches").click(function () {
+          let ids = Array.from(selectedLogIds);
+          if (!ids.length) {
+            return layer.msg("至少选择一条数据删除！", { icon: 2, time: 2000 });
+          }
+          layer.confirm("确认删除？", function (index) {
+            ajaxPromise({
+              url: "/student/delMultiple",
+              datas: JSON.stringify({ studentId: ids }),
+              type: "post",
+            }).then((res) => {
+              layer.msg("操作成功！", { icon: 1, time: 2000 });
+              getList(options, null);
+            });
+            layer.close(index);
+          });
+        });
+        // 复选行
+        jq(document).on("click", ".tableCheckBox", function (e) {
+          let id = e.target.dataset.id;
+          let checked = e.target.checked;
+          console.log(id, checked);
+          if (checked) {
+            selectedLogIds.add(id);
+          } else {
+            selectedLogIds.delete(id);
+          }
+          computedCheckedNum();
+        });
+        // 全选/全不选
+        jq("#checkAll").click(function (e) {
+          let logs = Array.from(jq(".tableCheckBox"));
+          let checked = e.target.checked;
+          logs.forEach((item) => {
+            item.checked = checked;
+            if (checked) {
+              selectedLogIds.add(item.dataset.id);
+            } else {
+              selectedLogIds.delete(item.dataset.id);
+            }
+          });
+          console.log(Array.from(selectedLogIds));
+        });
+        // 计算全选状态
+        function computedCheckedNum() {
+          let arr = Array.from(selectedLogIds);
+          let val = arr.length == tableData.length;
+          console.log(arr.length, tableData.length, val);
+          jq("#checkAll")[0].checked = val;
+        }
+
+        // 导入
+        upFile({ el: "#uploadBtn" });
+
+        // 文件上传
+        function upFile(options) {
+          upload.render({
+            elem: options.el, // 文件选择
+            accept: "file",
+            url: ADMIN_SETTING.API_URL + "/student/upload", //ADMIN_SETTING.API_URL
+            auto: true, // 设置自动提交
+
+            choose: function (obj) {
+              obj.preview(function (index, file, result) {
+                // console.log(index, file, result);
+              });
+            },
+            done: function (res) {
+              console.log(res);
+              if (res.code == 0) {
+                layer.msg("操作成功！", { icon: 1, time: 2000 });
+                setTimeout(function () {
+                  location.reload();
+                }, 1500);
+              } else {
+                layer.msg(res.msg, { icon: 2, time: 2000 });
+              }
+            },
+            error: function (res) {
+              layer.msg(res.msg, { icon: 2, time: 2000 });
+            },
+          });
+        }
+
+        // 性别排序
+        function sortBySex(type) {
+          let b = Array.from(boySet);
+          let g = Array.from(girlSet);
+          let arr = [];
+          jq(".layui-icon-triangle-d").each(function () {
+            jq(this).css("display", "none");
+          });
+          if (type == 1) {
+            // 正序：男前女后
+            arr = arr.concat(b, g);
+            jq(".sexzhengxu").css("display", "block");
+          } else {
+            // 倒叙：女前男后
+            arr = arr.concat(g, b);
+            jq(".sexdaoxu").css("display", "block");
+          }
+          renderFun(arr, total, true);
+        }
+        // 车型排序
+        function sortByChexing(type) {
+          let list = JSON.parse(JSON.stringify(tableData));
+          list = quickSort(list, "studentCarType");
+          jq(".layui-icon-triangle-d").each(function () {
+            jq(this).css("display", "none");
+          });
+          if (type == 1) {
+            // 正序
+            jq(".chexingzhengxu").css("display", "block");
+          } else {
+            // 倒叙
+            list = quickSort1(list, "studentCarType");
+            jq(".chexingdaoxu").css("display", "block");
+          }
+          renderFun(list, total, true);
+        }
+        // 科目排序
+        function sortByKemu(type) {
+          let list = JSON.parse(JSON.stringify(tableData));
+
+          jq(".layui-icon-triangle-d").each(function () {
+            jq(this).css("display", "none");
+          });
+          if (type == 1) {
+            // 正序
+            list = quickSort(list, "studentSubject");
+            jq(".kemuzhengxu").css("display", "block");
+          } else {
+            // 倒叙
+            list = quickSort1(list, "studentSubject");
+            jq(".kemudaoxu").css("display", "block");
+          }
+          renderFun(list, total, true);
+        }
+        // 考试原因排序
+        function sortByKsyy(type) {
+          let list = JSON.parse(JSON.stringify(tableData));
+
+          jq(".layui-icon-triangle-d").each(function () {
+            jq(this).css("display", "none");
+          });
+          if (type == 1) {
+            // 正序
+            list = quickSort(list, "studentSqyy");
+            jq(".ksyyzhengxu").css("display", "block");
+          } else {
+            // 倒叙
+            list = quickSort1(list, "studentSqyy");
+            jq(".ksyydaoxu").css("display", "block");
+          }
+          renderFun(list, total, true);
+        }
+        // 学员级别排序
+        function sortByLevel(type) {
+          let list = JSON.parse(JSON.stringify(tableData));
+
+          jq(".layui-icon-triangle-d").each(function () {
+            jq(this).css("display", "none");
+          });
+          if (type == 1) {
+            // 正序
+            list = quickSort(list, "studentLevel");
+            jq(".levelzhengxu").css("display", "block");
+          } else {
+            // 倒叙
+            list = quickSort1(list, "studentLevel");
+            jq(".leveldaoxu").css("display", "block");
+          }
+          renderFun(list, total, true);
+        }
+        // 添加时间排序
+        function sortByTime(type) {
+          let list = JSON.parse(JSON.stringify(tableData));
+
+          jq(".layui-icon-triangle-d").each(function () {
+            jq(this).css("display", "none");
+          });
+          if (type == 1) {
+            // 正序
+            list = quickSort(list, "addTime");
+            jq(".timezhengxu").css("display", "block");
+          } else {
+            // 倒叙
+            list = quickSort1(list, "addTime");
+            jq(".timedaoxu").css("display", "block");
+          }
+          renderFun(list, total, true);
+        }
+
+        /**
+         * 冒泡
+         */
+        function quickSort(arr, name) {
+          let arr1 = arr,
+            t;
+          for (let i = 0; i < arr1.length; i++) {
+            for (let j = 0; j < arr1.length - 1 - i; j++) {
+              if (arr1[j][name] > arr1[j + 1][name]) {
+                t = arr1[j];
+                arr1[j] = arr1[j + 1];
+                arr1[j + 1] = t;
+              }
+            }
+          }
+          return arr1;
+        }
+        function quickSort1(arr, name) {
+          let arr1 = arr,
+            t;
+          for (let i = 0; i < arr1.length; i++) {
+            for (let j = 0; j < arr1.length - 1 - i; j++) {
+              if (arr1[j][name] < arr1[j + 1][name]) {
+                t = arr1[j];
+                arr1[j] = arr1[j + 1];
+                arr1[j + 1] = t;
+              }
+            }
+          }
+          return arr1;
+        }
+
+        // 渲染列表
+        function renderFun(data, total, isSort = false) {
+          // 每次查询取消全选清除数据
+          jq("#checkAll")[0].checked = false;
+          selectedLogIds = new Set();
+
+          if (!isSort) {
+            jq(".layui-icon-triangle-d").each(function () {
+              jq(this).css("display", "none");
+            });
+            tableData = [];
+            tableData = data;
+            isSexSort = 1;
+            isChexingSort = 1;
+            isKemuSort = 1;
+            isKsyySort = 1;
+            isStudentLevelSort = 1;
+            isTimeSort = 1;
+          }
+
+          boySet = new Set();
+          girlSet = new Set();
+          total = total;
+
+          jq("#tableBody").empty();
+          let datas = data;
+          for (let i = 0; i < datas.length; i++) {
+            let item = datas[i];
+            let tr =
+              '<tr><td><input type="checkbox" name="" title="" lay-skin="primary" class="tableCheckBox" data-id="' +
+              item.studentId +
+              '"></td><td>' +
+              (i + 1) +
+              "</td><td>" +
+              (item.studentIdcard || "--") +
+              "</td><td>" +
+              (item.studentName || "--") +
+              "</td>";
+            var idcard = item.studentIdcard || "";
+            var sexType = "";
+            if (idcard.length == 15) {
+              sexType = idcard.substr(-1, 1);
+            } else if (idcard.length == 18) {
+              sexType = idcard.substr(-2, 1);
+            }
+            if (sexType >= 0) {
+              if (sexType % 2 > 0) {
+                boySet.add(item);
+                tr += "<td>男</td>";
+              } else {
+                girlSet.add(item);
+                tr += "<td>女</td>";
+              }
+            } else {
+              tr += "<td>--</td>";
+            }
+
+            let km = "--";
+            if (item.studentSubject == 1) {
+              km = "科目一";
+            } else if (item.studentSubject == 4) {
+              km = "科目四";
+            } else if (item.studentSubject == 5) {
+              km = "科目五";
+            }
+            let slevel = "";
+            if (item.studentLevel) {
+              slevel =
+                item.studentLevel.indexOf("00") > -1
+                  ? "全部"
+                  : item.studentLevel.substr(1);
+            }
+            let ksyystr = ksyyList.filter((ce) => {
+              return ce.value == item.studentSqyy;
+            });
+            tr +=
+              "<td>" +
+              (item.studentCarType || "--") +
+              "</td><td>" +
+              km +
+              "</td><td>" +
+              ksyystr[0].label +
+              "</td><td>" +
+              slevel +
+              "</td><td>" +
+              formatData(new Date(item.addTime).getTime()) +
+              '</td><td><a href="#" data-id="' +
+              item.studentId +
+              '" class="editRow layui-btn layui-btn layui-btn-xs">编辑</a>&#x3000;<a href="#" data-id="' +
+                    item.studentId +
+                    '" class="shangjiRow layui-btn layui-btn-primary layui-btn-xs">上机</a>&#x3000;<a href="#" data-id="' +
+                    item.studentId +
+                    '" class="delrow layui-btn layui-btn-primary layui-btn-xs">删除</a></td></tr>';
+
+            jq("#tableBody").append(tr);
+          }
+        }
+      })();
+    </script>
+  </body>
+</html>

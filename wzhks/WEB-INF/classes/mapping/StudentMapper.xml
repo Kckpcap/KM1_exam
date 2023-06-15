@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.abc.wzhks.web.dao.StudentMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.abc.wzhks.web.model.Student">
+        <id column="student_id" property="studentId"/>
+        <result column="student_idcard" property="studentIdcard"/>
+        <result column="student_name" property="studentName"/>
+        <result column="student_level" property="studentLevel"/>
+        <result column="student_car_type" property="studentCarType"/>
+        <result column="student_subject" property="studentSubject"/>
+        <result column="student_pic" property="studentPic"/>
+        <result column="student_sqyy" property="studentSqyy"/>
+        <result column="add_time" property="addTime"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        student_id AS studentId, student_idcard AS studentIdcard,student_sqyy AS studentSqyy, student_name AS studentName, student_level AS studentLevel, student_car_type AS studentCarType, student_subject AS studentSubject, student_pic AS studentPic,add_time AS addTime
+    </sql>
+
+    <insert id="saveOrUpdateBatch1">
+        insert into student(student_idcard, student_name, student_level, student_car_type, student_subject,
+        student_sqyy)values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.studentIdcard},
+            #{item.studentName},
+            #{item.studentLevel},
+            #{item.studentCarType},
+            #{item.studentSubject},
+            #{item.studentSqyy})
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        student_idcard = values(student_idcard),
+        student_name=values(student_name),
+        student_level=values(student_level),
+        student_car_type=values(student_car_type),
+        student_subject=values(student_subject),
+        student_sqyy=values(student_sqyy)
+    </insert>
+</mapper>

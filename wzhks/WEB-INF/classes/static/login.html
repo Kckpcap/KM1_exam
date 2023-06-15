@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>登录</title>
+    <link rel="stylesheet" href="./static/layui/css/layui.css" />
+    <link rel="stylesheet" href="./static/css/base.css" />
+    <script src="./static/layui/layui.all.js"></script>
+  </head>
+  <body class="login-bg">
+    <div class="login-box">
+      <div class="login-box-title">管理系统</div>
+      <div class="login-main">
+        <form class="layui-form" action="" lay-filter="loginForm">
+          <div class="layui-form-item">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-block">
+              <input
+                type="text"
+                name="userName"
+                required
+                lay-verify="required"
+                placeholder="请输入用户名"
+                autocomplete="off"
+                class="layui-input"
+              />
+            </div>
+          </div>
+          <div class="layui-form-item">
+            <label class="layui-form-label">密码</label>
+            <div class="layui-input-block">
+              <input
+                type="password"
+                name="userPwd"
+                required
+                lay-verify="required"
+                placeholder="请输入"
+                autocomplete="off"
+                class="layui-input"
+              />
+            </div>
+          </div>
+          <div class="layui-form-item" style="text-align: center">
+            <div class="layui-input-block" style="margin-left: 0">
+              <button
+                class="layui-btn"
+                id="loginFormBtn"
+                lay-submit
+                lay-filter="loginForm"
+              >
+                登录
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <script src="./static/js/md5.js"></script>
+    <script src="./static/js/utils.js"></script>
+    <script type="text/javascript" language="javascript">
+      !(function () {
+        localStorage.removeItem("kaoshi1");
+
+        var form = layui.form;
+        var jq = layui.$;
+
+        form.render(); //加载表单元素
+
+        //新增表单内容提交
+        form.on("submit(loginForm)", function (data) {
+          let d = JSON.parse(JSON.stringify(data.field));
+          d.userPwd = MD5(d.userPwd, 32);
+          ajaxPromise({
+            url: "/user/login",
+            datas: JSON.stringify(d),
+            type: "post",
+          }).then((res) => {
+            layer.msg("登录成功！", { icon: 1, time: 2000 });
+            localStorage.setItem("kaoshi1", JSON.stringify(res.data)); //存储登录信息    res.data    { userType: 2, userName: "张三" }
+            window.location.href = "./exam-list.html";
+          });
+          return false;
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta HTTP-EQUIV="pragma" CONTENT="no-cache" />
+    <meta HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate" />
+    <meta HTTP-EQUIV="expires" CONTENT="0" />
+    <title>日志管理</title>
+    <link rel="stylesheet" href="./static/layui/css/layui.css" />
+    <link rel="stylesheet" href="./static/css/base.css" />
+    <script src="./static/layui/layui.all.js"></script>
+  </head>
+  <body>
+    <div class="dmain-container">
+      <div class="top-menu">
+        <ul class="layui-nav" lay-filter="">
+          <li class="layui-nav-item">
+            <a href="./exam-list.html">试题管理</a>
+          </li>
+          <li class="layui-nav-item">
+            <a href="./check.html">试题检查</a>
+          </li>
+          <li class="layui-nav-item">
+            <a href="./machine.html">练习机管理</a>
+          </li>
+          <li class="layui-nav-item">
+            <a href="./student-list.html">学员列表</a>
+          </li>
+          <li class="layui-nav-item">
+            <a href="./monitor.html">监控</a>
+          </li>
+          <li class="layui-nav-item a-log layui-this">
+            <a href="./log.html">日志</a>
+          </li>
+          <li class="layui-nav-item"><a href="./login.html">退出</a></li>
+        </ul>
+        <div class="right-info">未登录</div>
+      </div>
+      <div class="dmain-content">
+        <div class="dmain-title">日志列表</div>
+        <div class="search-table">
+          <form class="layui-form" action="" lay-filter="searchForm">
+            <div class="layui-form-item">
+              <div class="layui-inline">
+                <label class="layui-form-label">开始时间</label>
+                <div class="layui-input-inline">
+                  <input
+                    type="text"
+                    name="beginTime"
+                    class="layui-input"
+                    id="beginTime"
+                  />
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">结束时间</label>
+                <div class="layui-input-inline">
+                  <input
+                    type="text"
+                    name="endTime"
+                    class="layui-input"
+                    id="endTime"
+                  />
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">身份证</label>
+                <div class="layui-input-inline">
+                  <input type="text" name="studentIdcard" class="layui-input" />
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">姓名</label>
+                <div class="layui-input-inline">
+                  <input
+                    type="text"
+                    name="studentName"
+                    class="layui-input"
+                    maxlength="50"
+                  />
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">车型</label>
+                <div class="layui-input-inline">
+                  <input
+                    type="text"
+                    name="studentCarType"
+                    class="layui-input"
+                    maxlength="10"
+                  />
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">科目</label>
+                <div class="layui-input-inline">
+                  <select name="studentSubject" id="kskmList" lay-filter="studentSubject">
+                    <option value=""></option>
+                    <!-- <option value="1">科目一</option>
+                    <option value="4">科目四</option>
+                    <option value="5">科目五</option> -->
+                  </select>
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">错题数</label>
+                <div class="layui-input-inline">
+                  <input
+                    type="checkbox"
+                    lay-filter="logError"
+                    name="logError"
+                    id="logError"
+                    title="错题数"
+                    lay-skin="primary"
+                  />
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">是否合格</label>
+                <div class="layui-input-inline">
+                  <select name="isPass" lay-filter="isPass">
+                    <option value=""></option>
+                    <option value="1">合格</option>
+                    <option value="2">不合格</option>
+                  </select>
+                </div>
+              </div>
+              <div class="layui-inline">
+                <button class="layui-btn" lay-submit lay-filter="searchForm">
+                  查询
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="dmain-table">
+          <div>
+            <button id="deleteBatches" class="layui-btn">
+              批量删除
+            </button>
+            <button id="clearAll" class="layui-btn">
+              一键清空
+            </button>
+          </div>
+          <table class="layui-table">
+            <colgroup>
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+            </colgroup>
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="checkAll" name="" title="选择" lay-skin="primary"></th>
+                <th>序号</th>
+                <th>身份证</th>
+                <th>姓名</th>
+                <th>性别</th>
+                <th>学员等级</th>
+                <th>车型</th>
+                <th>科目</th>
+                <th>成绩</th>
+                <th>漏题数</th>
+                <th>错题数</th>
+                <th>考试时长</th>
+                <th>考台编号</th>
+                <th>交卷时间</th>
+                <th id="handleDom">操作</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+        <div class="table-foot">
+          <div class="table-total"></div>
+          <div id="dpages"></div>
+        </div>
+      </div>
+    </div>
+    <!-- 查看错题列表 start -->
+    <div class="dmy-dialog" id="errorListDialog">
+      <table class="layui-table">
+        <colgroup>
+          <col />
+          <col />
+          <col />
+          <col />
+          <col />
+          <col />
+          <col />
+          <col />
+          <col />
+        </colgroup>
+        <thead>
+          <tr>
+            <th>题号</th>
+            <th>标题</th>
+            <th>类型</th>
+            <th>车型</th>
+            <th>难度</th>
+            <th>正确答案</th>
+            <th>考生答案</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="errorTableBody"></tbody>
+      </table>
+      <div style="margin-top: 40px; text-align: center">
+        <button
+          type="button"
+          id="listCancleBtn"
+          class="layui-btn layui-btn-primary"
+        >
+          关闭
+        </button>
+      </div>
+    </div>
+    <!-- 查看错题列表 end -->
+    <div class="my-loading" style="display: none;">
+      <i class="layui-icon layui-icon-loading-1 layui-anim layui-anim-rotate layui-anim-loop"></i>
+    </div>
+    <!-- 查看题目详情 start-->
+    <div class="dmy-dialog" id="cstDetailDialog">
+      <form class="layui-form" action="" lay-filter="postForm">
+        <div class="layui-form-item">
+          <div class="layui-form-item enabled">
+            <div class="layui-inline" style="display: none;">
+              <label class="layui-form-label">试题标记：</label>
+              <div class="layui-input-block">
+                <div class="info-text stbj"></div>
+              </div>
+            </div>
+            <div class="layui-inline">
+              <label class="layui-form-label">更新时间：</label>
+              <div class="layui-input-block">
+                <div class="info-text gxsj"></div>
+              </div>
+            </div>
+            <div class="layui-inline">
+              <label class="layui-form-label">考试原因：</label>
+              <div class="layui-input-block">
+                <div class="info-text ksyy"></div>
+              </div>
+            </div>
+            <div class="layui-inline">
+              <label class="layui-form-label">试题分类：</label>
+              <div class="layui-input-block">
+                <div class="info-text stfl"></div>
+              </div>
+            </div>
+          </div>
+          <div class="layui-form-item">
+            <div class="layui-inline">
+              <label class="layui-form-label">试题序号：</label>
+              <div class="layui-input-block">
+                <div class="info-text stxh"></div>
+              </div>
+            </div>
+            <div class="layui-inline">
+              <label class="layui-form-label">试题题型：</label>
+              <div class="layui-input-block">
+                <div class="info-text sttx"></div>
+              </div>
+            </div>
+            <div class="layui-inline">
+              <label class="layui-form-label">试题属性：</label>
+              <div class="layui-input-block">
+                <div class="info-text stsx"></div>
+              </div>
+            </div>
+          </div>
+          <div class="layui-form-item enabled">
+            <div class="layui-inline">
+              <label class="layui-form-label">适用车型：</label>
+              <div class="layui-input-block">
+                <div class="info-text sycx"></div>
+              </div>
+            </div>
+            <div class="layui-inline">
+              <label class="layui-form-label">答案：</label>
+              <div class="layui-input-block">
+                <div class="info-text stda font20"></div>
+              </div>
+            </div>
+          </div>
+          <div class="layui-form-item">
+            <label class="layui-form-label">试题内容：</label>
+            <div class="layui-input-block">
+              <div class="info-text stnr"></div>
+            </div>
+          </div>
+          <div class="layui-form-item imgdom" style="display: none">
+            <label class="layui-form-label">图片：</label>
+            <div class="layui-input-block">
+              <img src="" alt="" id="previewImg" class="exam-img" />
+              <div class="imgErr" style="line-height: 36px; color: #999">
+                <i class="layui-icon layui-icon-picture"></i>
+                图片加载失败
+              </div>
+            </div>
+          </div>
+          <div class="layui-form-item" id="selectItems" style="display: none">
+            <label class="layui-form-label">内容：</label>
+            <div class="layui-input-block">
+              <div class="layui-form-item">
+                <label class="layui-form-label">A：</label>
+                <div class="layui-input-block">
+                  <div class="info-text xzdaa"></div>
+                </div>
+              </div>
+              <div class="layui-form-item">
+                <label class="layui-form-label">B：</label>
+                <div class="layui-input-block">
+                  <div class="info-text xzdab"></div>
+                </div>
+              </div>
+              <div class="layui-form-item">
+                <label class="layui-form-label">C：</label>
+                <div class="layui-input-block">
+                  <div class="info-text xzdac"></div>
+                </div>
+              </div>
+              <div class="layui-form-item">
+                <label class="layui-form-label">D：</label>
+                <div class="layui-input-block">
+                  <div class="info-text xzdad"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="layui-form-item">
+            <label class="layui-form-label">难度：</label>
+            <div class="layui-input-block">
+              <div class="info-text stnd" id="stndListId"></div>
+            </div>
+          </div>
+          
+        <div class="layui-form-item" id="pdtAnswer">
+          <!-- 答案 -->
+          <div class="layui-inline">
+            <label class="layui-form-label">答案：</label>
+            <div class="layui-input-block">
+              <div class="info-text stda font20"></div>
+            </div>
+          </div>
+          <div class="layui-inline">
+            <label class="layui-form-label">考生答案：</label>
+            <div class="layui-input-block">
+              <div
+                class="info-text studentAnswer font20"
+                style="color: #ff6600"
+              ></div>
+            </div>
+          </div>
+        </div>
+        <!-- <div class="layui-form-item">
+          <div class="layui-inline">
+            <label class="layui-form-label">正确数量：</label>
+            <div class="layui-input-block">
+              <div class="info-text correctCount"></div>
+            </div>
+          </div>
+          <div class="layui-inline">
+            <label class="layui-form-label">错误数量：</label>
+            <div class="layui-input-block">
+              <div class="info-text errorCount"></div>
+            </div>
+          </div>
+        </div> -->
+        <!-- <div class="layui-form-item enabled">
+          <div class="layui-inline">
+            <label class="layui-form-label">是否启用：</label>
+            <div class="layui-input-block" style="width: 160px">
+              <div class="info-text usable"></div>
+            </div>
+          </div>
+        </div> -->
+        <div class="layui-form-item" style="text-align: center">
+          <div class="layui-input-block" style="margin-left: 0">
+            <!-- <button class="layui-btn layui-btn-normal" id="prevExam">
+                  上一题
+                </button> -->
+            <button
+              type="button"
+              id="detailCancleBtn"
+              class="layui-btn layui-btn-primary"
+            >
+              关闭
+            </button>
+            <!-- <button class="layui-btn layui-btn-normal" id="nextExam">
+                  下一题
+                </button> -->
+          </div>
+        </div>
+      </form>
+    </div>
+    <!-- 查看题目详情 end-->
+    
+    <!-- 修改登录人密码 start-->
+    <div class="dmy-dialog" id="userPwdDialog">
+      <form class="layui-form" action="" lay-filter="userpwdForm">
+        <div class="layui-form-item">
+          <label class="layui-form-label">用户名</label>
+          <div class="layui-input-block">
+            <input
+              type="text"
+              name="userName"
+              required
+              lay-verify="required"
+              placeholder="请输入"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <label class="layui-form-label">原密码</label>
+          <div class="layui-input-block">
+            <input
+              type="password"
+              name="oldPwd"
+              required
+              lay-verify="required|passwd2"
+              placeholder="请输入"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <label class="layui-form-label">新密码</label>
+          <div class="layui-input-block">
+            <input
+              type="password"
+              name="userPwd2"
+              required
+              lay-verify="required|passwd2"
+              placeholder="请输入"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <label class="layui-form-label">确认密码</label>
+          <div class="layui-input-block">
+            <input
+              type="password"
+              name="checkPwd2"
+              required
+              lay-verify="required|checkpwd2"
+              placeholder="请输入"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </div>
+        </div>
+        <div class="layui-form-item" style="text-align: center">
+          <div class="layui-input-block" style="margin-left: 0">
+            <button
+              class="layui-btn"
+              id="userPwdBtn"
+              lay-submit
+              lay-filter="userpwdForm"
+            >
+              立即提交
+            </button>
+            <button type="button" class="cancleBtn layui-btn layui-btn-primary">
+              取消
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <!-- 修改登录人密码 end-->
+    <script src="./static/js/md5.js"></script>
+    <script src="./static/js/utils.js"></script>
+    <script type="text/javascript" language="javascript">
+      !(function () {
+        getStatus(); //获取状态
+        // 初始化数据
+        var options = {
+          url: "/log/getList",
+          tableQuery: {
+            beginTime: "", //开始时间
+            endTime: "", //结束时间
+            studentSubject: "", //科目  1  4
+            isPass: "", //是否合格 1合格 2不合格
+            studentIdcard: "", //身份证
+            studentName: "", //姓名
+            studentCarType: "", //车型
+            logError: 2, //1 错题数倒叙排列  2默认
+            page: 1,
+            size: 20,
+          },
+          suc: renderFun,
+        };
+        var stsxList = ADMIN_SETTING.stsxList;
+        var tableData = []; //列表数据
+        var currentErrArr = []; //错题列表
+        var currentErrIndex = 0,
+          currentLogData = null,
+          errTotal = 0; //当前点击的错题序号
+
+          var kmArrs = window.ADMIN_SETTING.subjectArrs;
+
+        var laypage = layui.laypage,
+          laydate = layui.laydate,
+          form = layui.form;
+        var jq = layui.$;
+        var logError = false;
+
+        // 加载考试科目
+        addOptions("#kskmList", kmArrs);
+
+        form.render(); //加载表单元素
+        //初始化日期时间
+        laydate.render({
+          elem: "#beginTime",
+          type: "datetime",
+        });
+        laydate.render({
+          elem: "#endTime",
+          type: "datetime",
+        });
+        var userType = JSON.parse(localStorage.getItem("kaoshi1")).userType; //当前登录用户角色
+        // 查询
+        getList(options, null);
+        form.on("submit(searchForm)", function (data) {
+          options.tableQuery.page = 1;
+          options.tableQuery = Object.assign(options.tableQuery, data.field);
+          options.tableQuery.beginTime = data.field.beginTime
+            ? new Date(data.field.beginTime).getTime() / 1000
+            : "";
+          options.tableQuery.endTime = data.field.endTime
+            ? new Date(data.field.endTime).getTime() / 1000
+            : "";
+          options.tableQuery.logError = logError ? 1 : 2;
+          getList(options, null);
+          return false;
+        });
+        // 修改查询的排序条件
+        form.on("checkbox(logError)", function (data) {
+          logError = data.elem.checked;
+          form.render();
+        });
+        // 关闭当前层问题待做
+        jq(document).on("click", "#listCancleBtn", function () {
+          parent.layer.close(listIndex);
+        });
+        jq(document).on("click", "#detailCancleBtn", function () {
+          parent.layer.close(detailIndex);
+        });
+
+        // 删除
+        jq(document).on("click", ".delrow", function (e) {
+          let id = e.target.dataset.id;
+          layer.confirm("确认删除？", function (index) {
+            ajaxPromise({
+              url: "/log/del",
+              datas: JSON.stringify({ logId: id }),
+              type: "post",
+            }).then((res) => {
+              layer.msg("操作成功！", { icon: 1, time: 2000 });
+              getList(options, null);
+            });
+            layer.close(index);
+          });
+        });
+        // 查看错题列表
+        var listIndex = 0;
+        jq(document).on("click", ".seeError", function (e) {
+          let id = e.target.dataset.id;
+          currentLogData = tableData.filter((item) => {
+            return item.logId == id;
+          });
+          currentLogData = currentLogData[0];
+
+          let errorAnswers = [],
+            errorExamNumber = [];
+
+          if (currentLogData.logErrorExamAnswer) {
+            errorAnswers = currentLogData.logErrorExamAnswer.split(",");
+          }
+          if (currentLogData.logErrorExamNumber) {
+            errorExamNumber = currentLogData.logErrorExamNumber.split(",");
+          }
+          ajaxPromise({
+            url: "/log/getErrorList",
+            datas: { logId: id },
+            type: "get",
+          }).then((res) => {
+            currentErrArr = res.data.map((item, index) => {
+              item.index = index;
+              let n = errorExamNumber.indexOf(item.stxh);
+              if (errorAnswers[n] && errorAnswers[n] != 0) {
+                item.studentAnswer = errorAnswers[n];
+              } else {
+                item.studentAnswer = "";
+              }
+
+              return item;
+            });
+            errTotal = res.data.length - 1;
+            listIndex = layer.open({
+              type: 1,
+              title: "查看错题",
+              content: jq("#errorListDialog"),
+              area: ["100%", "100%"], //弹窗尺寸
+              success: function (layero, index) {
+                jq("#errorListDialog").css({
+                  height: ADMIN_SETTING.wh - 83 + "px",
+                  display: "block",
+                });
+                renderError(currentErrArr);
+              },
+            });
+          });
+        });
+        var detailIndex = 1;
+
+        // 查看错题详情
+        jq(document).on("click", ".seeDetail", function (e) {
+          let id = e.target.dataset.id;
+          let cstData = currentErrArr.filter((item) => {
+            return item.stxh == id;
+          });
+          currentErrIndex = cstData[0].index;
+          if (currentErrIndex > 0) {
+            jq("#prevExam").show();
+          } else {
+            jq("#prevExam").hide();
+          }
+          if (currentErrIndex < errTotal) {
+            jq("#nextExam").show();
+          } else {
+            jq("#nextExam").hide();
+          }
+          let d = setDialogVals(cstData[0]);
+          
+          detailIndex = layer.open({
+            type: 1,
+            title: "查看详情",
+            content: jq("#cstDetailDialog"),
+            area: [ADMIN_SETTING.ww + "px", ADMIN_SETTING.wh + "px"], //弹窗尺寸
+            success: function (layero, index) {
+              form.val("postForm", d);
+              if (d.stsx==2) {
+                jq(".imgdom").show();
+                var cstimg = new Image();
+                cstimg.src = "./static/cstimgs/" + d.stxh + ".jpg";
+                cstimg.onload = function () {
+                  jq(".imgErr").hide();
+                  jq("#previewImg").show();
+                  jq("#previewImg").attr(
+                    "src",
+                    "./static/cstimgs/" + d.stxh + ".jpg"
+                  );
+                };
+                cstimg.onerror = function () {
+                  jq(".imgErr").show();
+                  jq("#previewImg").hide();
+                };
+              } else {
+                jq(".imgdom").hide();
+              }
+            },
+          });
+        });
+        jq(document).on("click", "#prevExam", function (e) {
+          changeCst(1);
+        });
+        jq(document).on("click", "#nextExam", function (e) {
+          changeCst(2);
+        });
+
+        // 一键清空
+        jq('#clearAll').click(function(e){
+          layer.confirm("确认清空所有数据？", function (index) {
+            ajaxPromise({
+              url: "/log/clear",
+              datas: {},
+              type: "post",
+            }).then((res) => {
+              layer.msg("操作成功！", { icon: 1, time: 2000 });
+              getList(options, null);
+            });
+            layer.close(index);
+          });
+        })
+        // 已选日志id
+        var selectedLogIds = new Set();
+        jq("#deleteBatches").click(function(){
+          let ids = Array.from(selectedLogIds)
+          if(!ids.length){
+            return layer.msg('至少选择一条日志删除！', { icon: 2, time: 2000 })
+          }
+        
+          layer.confirm("确认删除？", function (index) {
+            ajaxPromise({
+              url: "/log/delMultiple",
+              datas: JSON.stringify({ logId: ids }),
+              type: "post",
+            }).then((res) => {
+              layer.msg("操作成功！", { icon: 1, time: 2000 });
+              getList(options, null);
+            });
+            layer.close(index);
+          });
+        })
+        // 复选行
+        jq(document).on('click','.tableCheckBox',function(e){
+          let id = e.target.dataset.id
+          let checked = e.target.checked
+          console.log(id,checked)
+          if(checked){
+            selectedLogIds.add(id)
+          }else{
+            selectedLogIds.delete(id)
+          }
+          computedCheckedNum()
+        })
+        // 全选/全不选
+        jq('#checkAll').click(function(e){
+          let logs = Array.from(jq('.tableCheckBox'))
+          let checked = e.target.checked
+          logs.forEach(item=>{
+            item.checked = checked
+            if(checked){
+              selectedLogIds.add(item.dataset.id)
+            }else{
+              selectedLogIds.delete(item.dataset.id)
+            }
+          })
+          console.log(Array.from(selectedLogIds))
+        })
+        // 计算全选状态
+        function computedCheckedNum(){
+          let arr = Array.from(selectedLogIds)
+          let val = arr.length==tableData.length;
+          console.log(arr.length,tableData.length,val)
+          jq('#checkAll')[0].checked = val
+        }
+
+        // 切换题
+        function changeCst(type) {
+          if (type == 1) {
+            currentErrIndex--;
+          } else {
+            currentErrIndex++;
+          }
+          if (currentErrIndex > 0) {
+            jq("#prevExam").show();
+          } else {
+            jq("#prevExam").hide();
+          }
+          if (currentErrIndex < errTotal) {
+            jq("#nextExam").show();
+          } else {
+            jq("#nextExam").hide();
+          }
+          let d = setDialogVals(currentErrArr[currentErrIndex]);
+          form.val("postForm", d);
+          if (d.stsx==2) {
+            jq(".imgdom").show();
+            var cstimg = new Image();
+            cstimg.src = "./static/cstimgs/" + d.stxh + ".jpg";
+            cstimg.onload = function () {
+              jq(".imgErr").hide();
+              jq("#previewImg").show();
+              jq("#previewImg").attr(
+                "src",
+                "./static/cstimgs/" + d.stxh + ".jpg"
+              );
+            };
+            cstimg.onerror = function () {
+              jq(".imgErr").show();
+              jq("#previewImg").hide();
+            };
+          } else {
+            jq(".imgdom").hide();
+          }
+        }
+
+        // 弹窗赋值
+        function setDialogVals(data) {
+          let d = JSON.parse(JSON.stringify(data));
+          let nds = "";
+          if (d.stnd) {
+            nds = d.stnd.split(ADMIN_SETTING.letter).join("，");
+            nds = nds.substr(1);
+          }
+          d.gxsj = formatData(new Date(d.gxsj).getTime());
+          let da = d.stda,
+            dastr = da;
+          let lx = d.sttx;
+          if (lx == 1) {
+            // 判断题
+            dastr = da != "N" ? "正确（Y）" : "错误（N）";
+            jq("#selectItems").hide();
+          } else {
+            jq("#selectItems").show();
+          }
+          jq("#stndListId").text(nds);
+          jq(".stda").text(dastr);
+          jq(".ksyy").text(d.ksyy);
+          jq(".stlx").text(d.stlx);
+          jq(".stxh").text(d.stxh);
+          jq(".stbj").text(d.stbj == 1 ? "可用" : "不可用");
+          jq(".txlj").text(d.txlj);
+          jq(".sttx").text(ADMIN_SETTING.typeArr[d.sttx - 1]);
+          jq(".stnr").text(d.stnr);
+          jq(".xzdaa").text(d.xzdaa);
+          jq(".xzdab").text(d.xzdab);
+          jq(".xzdac").text(d.xzdac);
+          jq(".xzdad").text(d.xzdad);
+          jq(".sycx").text(d.sycx);
+          jq(".gxsj").text(d.gxsj);
+          jq(".stfl").text(d.stfl);
+          jq(".custom").text(d.custom > 0 ? "是" : "否");
+          jq(".correctCount").text(d.correctCount);
+          jq(".errorCount").text(d.errorCount);
+          jq(".stsx").text(stsxList[d.stsx - 1].label);
+          jq(".studentAnswer").text(d.studentAnswer.toUpperCase());
+          return d;
+        }
+
+        function renderFun(data,t) {
+          // 每次查询取消全选清除数据
+          jq('#checkAll')[0].checked = false
+          selectedLogIds = new Set();
+
+          jq("#tableBody").empty();
+          let datas = data;
+          tableData = data;
+          total = t
+          jq('.table-total').text('总数：'+total)
+          for (let i = 0; i < datas.length; i++) {
+            let item = datas[i];
+            let tr =
+              '<tr><td><input type="checkbox" name="" title="" lay-skin="primary" class="tableCheckBox" data-id="'+item.logId+'"></td><td>' +
+              (i + 1) +
+              "</td><td>" +
+              (item.studentIdcard || "--") +
+              "</td><td>" +
+              (item.studentName || "--") +
+              "</td>";
+            var idcard = item.studentIdcard;
+            var sexType =
+              idcard.length > 15 ? idcard.substr(-2, 1) : idcard.substr(-1, 1);
+            if (sexType % 2 > 0) {
+              tr += "<td>男</td>";
+            } else {
+              tr += "<td>女</td>";
+            }
+            let km = "--";
+            if (item.studentSubject == 1) {
+              km = "科目一";
+            } else if (item.studentSubject == 4) {
+              km = "科目四";
+            } else if (item.studentSubject == 5) {
+              km = "科目五";
+            }
+            let slevel = "";
+            if (item.studentLevel) {
+              slevel =
+                item.studentLevel.indexOf("00") > -1
+                  ? "全部"
+                  : item.studentLevel.substr(1);
+            }
+            tr +=
+              "<td>" +
+              slevel +
+              "</td><td>" +
+              (item.studentCarType || "--") +
+              "</td><td>" +
+              km +
+              "</td>";
+            if (item.logScore < 90) {
+              tr +=
+                "<td><span class='layui-badge'>" +
+                item.logScore +
+                "</span></td>";
+            } else {
+              tr +=
+                "<td><span class='layui-badge layui-bg-green'>" +
+                item.logScore +
+                "</span></td>";
+            }
+            tr += "<td>" + item.logLose + "</td><td>" + item.logError;
+            if (item.logError > 0) {
+              tr +=
+                "&#x3000;<a data-id=" +
+                item.logId +
+                " class='seeError layui-btn layui-btn-danger layui-btn-xs'> 查看错题</a></td>";
+            } else {
+              tr += "</td>";
+            }
+            let examtime = "--",
+              min = 0,
+              sec = 0;
+            if (item.logExamTime > 0) {
+              min = parseInt(item.logExamTime / 60);
+              sec = item.logExamTime % 60;
+              examtime =
+                (min > 0 ? min + "分" : "") + (sec > 0 ? sec + "秒" : "");
+            }
+            tr +=
+              "<td>" +
+              examtime +
+              "</td><td>" +
+              (item.logExamDesk || "--") +
+              "</td><td>" +
+              (item.logCreateTime
+                ? formatData(item.logCreateTime * 1000)
+                : "--") +
+              "</td><td><a data-id=" +
+              item.logId +
+              " class='delrow layui-btn layui-btn-primary layui-btn-xs'>删除</a></td></tr>";
+
+            jq("#tableBody").append(tr);
+          }
+        }
+        
+        
+
+        // 渲染错题列表
+        function renderError(data) {
+          jq("#errorTableBody").empty();
+          let datas = data;
+          for (let i = 0; i < datas.length; i++) {
+            let item = datas[i];
+            let tr = "<tr><td>" + item.stxh;
+            if (item.stsx > 1) {
+              tr +=
+                '&#x3000;<i style="font-size:14px;color:#1E9FFF" class="layui-icon layui-icon-picture"></i>';
+            }
+            tr +=
+              "</td><td>" +
+              item.stnr +
+              "</td><td>" +
+              ADMIN_SETTING.typeArr[item.sttx - 1] +
+              "</td>";
+            tr += "<td>" + item.sycx + "</td>";
+            let ndstr = "";
+            if (item.stnd) {
+              ndstr = item.stnd.split(ADMIN_SETTING.letter).join("，");
+              ndstr = ndstr.substr(1);
+            }
+            tr += "<td>" + ndstr + "</td>";
+
+            // tr +=
+            //   "<td>" +
+            //   (item.custom > 0 ? "是" : "否") +
+            //   "</td><td>" +
+            //   item.correctCount +
+            //   "</td><td>" +
+            //   item.errorCount +
+            //   "</td>";
+            // if (item.usable == 1) {
+            //   tr += "<td>启用</td>";
+            // } else {
+            //   tr +=
+            //     '<td><span class="layui-badge layui-bg-gray">禁用</span></td>';
+            // }
+            tr +=
+              "<td>" + item.stda + "</td><td>" + item.studentAnswer + "</td>";
+            tr +=
+              '<td><a href="#" data-id="' +
+              item.stxh +
+              '" class="seeDetail layui-btn layui-btn-xs">查看详情</a></td></tr>';
+            jq("#errorTableBody").append(tr);
+          }
+        }
+      })();
+    </script>
+  </body>
+</html>

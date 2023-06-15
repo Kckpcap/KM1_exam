@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta HTTP-EQUIV="pragma" CONTENT="no-cache" />
+    <meta HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate" />
+    <meta HTTP-EQUIV="expires" CONTENT="0" />
+    <title>题库管理</title>
+    <link rel="stylesheet" href="./static/layui/css/layui.css" />
+    <link rel="stylesheet" href="./static/css/base.css" />
+    <script src="./static/layui/layui.all.js"></script>
+    <style>
+      .cst-info {
+        padding: 15px;
+        background: #f6f8f9;
+        border: 1px solid #eee;
+      }
+      .layui-form-checkbox[lay-skin="primary"] {
+        padding-left: 22px;
+      }
+      .cst-num {
+        padding-left: 20px;
+        color: #1e9fff;
+      }
+      .info-text {
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dmain-container">
+      <div class="top-menu">
+        <ul class="layui-nav" lay-filter="">
+          <li class="layui-nav-item layui-this">
+            <a href="./exam-list.html">试题管理</a>
+          </li>
+          <li class="layui-nav-item">
+            <a href="./check.html">试题检查</a>
+          </li>
+          <li class="layui-nav-item">
+            <a href="./machine.html">练习机管理</a>
+          </li>
+          <li class="layui-nav-item">
+            <a href="./student-list.html">学员列表</a>
+          </li>
+          <li class="layui-nav-item a-monitor">
+            <a href="./monitor.html">监控</a>
+          </li>
+          <li class="layui-nav-item a-log"><a href="./log.html">日志</a></li>
+          <li class="layui-nav-item"><a href="./login.html">退出</a></li>
+        </ul>
+        <div class="right-info">未登录</div>
+      </div>
+      <div class="dmain-content">
+        <div class="dmain-title">试题管理</div>
+        <div class="search-table">
+          <form class="layui-form" action="" lay-filter="searchForm">
+            <div class="layui-form-item">
+              <div class="layui-inline">
+                <label class="layui-form-label">试题序号</label>
+                <div class="layui-input-inline">
+                  <input
+                    type="text"
+                    name="stxh"
+                    maxlength="50"
+                    placeholder="请输入试题序号"
+                    autocomplete="off"
+                    class="layui-input"
+                  />
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">试题内容</label>
+                <div class="layui-input-inline">
+                  <input
+                    type="text"
+                    name="stnr"
+                    maxlength="50"
+                    placeholder="请输入试题内容"
+                    autocomplete="off"
+                    class="layui-input"
+                  />
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">题型</label>
+                <div class="layui-input-inline">
+                  <select name="sttx" lay-filter="sttx">
+                    <option value=""></option>
+                    <option value="1">判断题</option>
+                    <option value="2">单选题</option>
+                    <option value="3">多选题</option>
+                  </select>
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">试题属性</label>
+                <div class="layui-input-inline">
+                  <select name="stsx" lay-filter="lx" id="stsxSelect">
+                    <option value=""></option>
+                  </select>
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">考试原因</label>
+                <div class="layui-input-inline">
+                  <select name="ksyy" lay-filter="ksyy" id="ksyyList">
+                    <option value=""></option>
+                  </select>
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">试题分类</label>
+                <div class="layui-input-inline">
+                  <select name="stfl" lay-filter="stfl" id="stflList">
+                    <option value=""></option>
+                  </select>
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">适用车型：</label>
+                <div class="layui-input-inline">
+                  <select name="sycx" lay-filter="sycx" id="sycxList">
+                    <option value=""></option>
+                  </select>
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">难度</label>
+                <div class="layui-input-inline">
+                  <select name="stnd" lay-filter="stnd" id="stndList">
+                    <option value=""></option>
+                  </select>
+                </div>
+              </div>
+              <div class="layui-inline">
+                <button class="layui-btn" lay-submit lay-filter="searchForm">
+                  查询
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="dmain-table">
+          <table class="layui-table">
+            <colgroup>
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+            </colgroup>
+            <thead>
+              <tr>
+                <th>试题序号</th>
+                <th>试题属性</th>
+                <th>试题题型</th>
+                <th>试题内容</th>
+                <th>适用车型</th>
+                <th>试题分类</th>
+                <th>考试原因</th>
+                <th>试题难度</th>
+                <th>更新时间</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+        <div class="table-foot">
+          <div class="table-total"></div>
+          <div id="dpages"></div>
+        </div>
+
+        <!-- <div class="cst-info" style="display: none">
+          <div class="dmain-title" style="border: none">
+            试题信息
+            <span class="cst-num" id="stNums">0 / 0</span>
+          </div>
+          <form id="stInfo" class="layui-form" action="" lay-filter="postForm">
+            <div class="layui-form-item enabled">
+              <div class="layui-inline">
+                <label class="layui-form-label">试题标记：</label>
+                <div class="layui-input-block">
+                  <div class="info-text stbj"></div>
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">更新时间：</label>
+                <div class="layui-input-block">
+                  <div class="info-text gxsj"></div>
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">考试原因：</label>
+                <div class="layui-input-block">
+                  <div class="info-text ksyy"></div>
+                </div>
+              </div>
+            </div>
+            <div class="layui-form-item">
+              <div class="layui-inline">
+                <label class="layui-form-label">试题序号：</label>
+                <div class="layui-input-block">
+                  <div class="info-text stxh"></div>
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">试题题型：</label>
+                <div class="layui-input-block">
+                  <div class="info-text sttx"></div>
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">试题属性：</label>
+                <div class="layui-input-block">
+                  <div class="info-text stsx"></div>
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">试题分类：</label>
+                <div class="layui-input-block">
+                  <div class="info-text stfl"></div>
+                </div>
+              </div>
+            </div>
+            <div class="layui-form-item enabled">
+              <div class="layui-inline">
+                <label class="layui-form-label">适用车型：</label>
+                <div class="layui-input-block">
+                  <div class="info-text sycx"></div>
+                </div>
+              </div>
+              <div class="layui-inline">
+                <label class="layui-form-label">答案：</label>
+                <div class="layui-input-block">
+                  <div class="info-text stda font20"></div>
+                </div>
+              </div>
+            </div>
+            <div class="layui-form-item">
+              <label class="layui-form-label">试题内容：</label>
+              <div class="layui-input-block">
+                <div class="info-text stnr"></div>
+              </div>
+            </div>
+
+            <div class="layui-form-item imgdom" style="display: none">
+              <label class="layui-form-label">图片：</label>
+              <div class="layui-input-block">
+                <img src="" alt="" id="previewImg" class="exam-img" />
+                <div class="imgErr" style="line-height: 36px; color: #999">
+                  <i class="layui-icon layui-icon-picture"></i>
+                  图片加载失败
+                </div>
+              </div>
+            </div>
+            <div class="layui-form-item" id="selectItems" style="display: none">
+              <label class="layui-form-label">内容：</label>
+              <div class="layui-input-block">
+                <div class="layui-form-item">
+                  <label class="layui-form-label">A：</label>
+                  <div class="layui-input-block">
+                    <div class="info-text xzdaa"></div>
+                  </div>
+                </div>
+                <div class="layui-form-item">
+                  <label class="layui-form-label">B：</label>
+                  <div class="layui-input-block">
+                    <div class="info-text xzdab"></div>
+                  </div>
+                </div>
+                <div class="layui-form-item">
+                  <label class="layui-form-label">C：</label>
+                  <div class="layui-input-block">
+                    <div class="info-text xzdac"></div>
+                  </div>
+                </div>
+                <div class="layui-form-item">
+                  <label class="layui-form-label">D：</label>
+                  <div class="layui-input-block">
+                    <div class="info-text xzdad"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="layui-form-item">
+              <label class="layui-form-label">难度：</label>
+              <div class="layui-input-block" id="stndListId"></div>
+            </div>
+
+            <div class="layui-form-item" style="text-align: center">
+              <div class="layui-input-block" style="margin-left: 0">
+                <button class="layui-btn layui-btn-normal" id="prevExam">
+                  上一题
+                </button>
+                <button
+                  class="layui-btn"
+                  id="formEditBtn"
+                  lay-submit
+                  lay-filter="formEdit"
+                >
+                  立即提交
+                </button>
+                <button
+                  type="button"
+                  id="cancleBtn"
+                  class="layui-btn layui-btn-primary"
+                >
+                  取消
+                </button>
+                <button class="layui-btn layui-btn-normal" id="nextExam">
+                  下一题
+                </button>
+              </div>
+            </div>
+          </form>
+        </div> -->
+      </div>
+    </div>
+
+    <div class="my-loading" style="display: none;">
+      <i class="layui-icon layui-icon-loading-1 layui-anim layui-anim-rotate layui-anim-loop"></i>
+    </div>
+
+    <!-- 添加/编辑题目弹窗 start-->
+    <div class="dmy-dialog" id="cstpostDialog">
+      <form class="layui-form" action="" lay-filter="postForm">
+        <div class="layui-form-item">
+          <div class="layui-form-item enabled">
+            <div class="layui-inline" style="display: none;">
+              <label class="layui-form-label">试题标记：</label>
+              <div class="layui-input-block">
+                <div class="info-text stbj"></div>
+              </div>
+            </div>
+            <div class="layui-inline">
+              <label class="layui-form-label">更新时间：</label>
+              <div class="layui-input-block">
+                <div class="info-text gxsj"></div>
+              </div>
+            </div>
+            <div class="layui-inline">
+              <label class="layui-form-label">考试原因：</label>
+              <div class="layui-input-block">
+                <div class="info-text ksyy"></div>
+              </div>
+            </div>
+          </div>
+          <div class="layui-form-item">
+            <div class="layui-inline">
+              <label class="layui-form-label">试题序号：</label>
+              <div class="layui-input-block">
+                <div class="info-text stxh"></div>
+              </div>
+            </div>
+            <div class="layui-inline">
+              <label class="layui-form-label">试题题型：</label>
+              <div class="layui-input-block">
+                <div class="info-text sttx"></div>
+              </div>
+            </div>
+            <div class="layui-inline">
+              <label class="layui-form-label">试题属性：</label>
+              <div class="layui-input-block">
+                <div class="info-text stsx"></div>
+              </div>
+            </div>
+            <div class="layui-inline">
+              <label class="layui-form-label">试题分类：</label>
+              <div class="layui-input-block">
+                <div class="info-text stfl"></div>
+              </div>
+            </div>
+          </div>
+          <div class="layui-form-item enabled">
+            <div class="layui-inline">
+              <label class="layui-form-label">适用车型：</label>
+              <div class="layui-input-block">
+                <div class="info-text sycx"></div>
+              </div>
+            </div>
+            <div class="layui-inline">
+              <label class="layui-form-label">答案：</label>
+              <div class="layui-input-block">
+                <div class="info-text stda font20"></div>
+              </div>
+            </div>
+          </div>
+          <div class="layui-form-item">
+            <label class="layui-form-label">试题内容：</label>
+            <div class="layui-input-block">
+              <div class="info-text stnr"></div>
+            </div>
+          </div>
+
+          <div class="layui-form-item imgdom" style="display: none">
+            <label class="layui-form-label">图片：</label>
+            <div class="layui-input-block">
+              <img src="" alt="" id="previewImg" class="exam-img" />
+              <div class="imgErr" style="line-height: 36px; color: #999">
+                <i class="layui-icon layui-icon-picture"></i>
+                图片加载失败
+              </div>
+            </div>
+          </div>
+          <div class="layui-form-item" id="selectItems" style="display: none">
+            <label class="layui-form-label">内容：</label>
+            <div class="layui-input-block">
+              <div class="layui-form-item">
+                <label class="layui-form-label">A：</label>
+                <div class="layui-input-block">
+                  <div class="info-text xzdaa"></div>
+                </div>
+              </div>
+              <div class="layui-form-item">
+                <label class="layui-form-label">B：</label>
+                <div class="layui-input-block">
+                  <div class="info-text xzdab"></div>
+                </div>
+              </div>
+              <div class="layui-form-item">
+                <label class="layui-form-label">C：</label>
+                <div class="layui-input-block">
+                  <div class="info-text xzdac"></div>
+                </div>
+              </div>
+              <div class="layui-form-item">
+                <label class="layui-form-label">D：</label>
+                <div class="layui-input-block">
+                  <div class="info-text xzdad"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="layui-form-item">
+            <label class="layui-form-label">难度：</label>
+            <div class="layui-input-block" id="stndListId"></div>
+          </div>
+          
+        <div class="layui-form-item" style="text-align: center">
+          <div class="layui-input-block" style="margin-left: 0">
+            <button
+              class="layui-btn layui-btn-normal"
+              id="prevExam"
+              lay-submit
+            >
+              上一题
+            </button>
+            <button
+              class="layui-btn"
+              id="formEditBtn"
+              lay-submit
+              lay-filter="formEdit"
+            >
+              立即提交
+            </button>
+            <button
+              type="button"
+              id="cancleBtn"
+              class="layui-btn layui-btn-primary"
+            >
+              取消
+            </button>
+            <button
+              class="layui-btn layui-btn-normal"
+              id="nextExam"
+              lay-submit
+            >
+              下一题
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <!-- 添加/编辑题目弹窗 end-->
+    <!-- 修改登录人密码 start-->
+    <div class="dmy-dialog" id="userPwdDialog">
+      <form class="layui-form" action="" lay-filter="userpwdForm">
+        <div class="layui-form-item">
+          <label class="layui-form-label">用户名</label>
+          <div class="layui-input-block">
+            <input
+              type="text"
+              name="userName"
+              required
+              lay-verify="required"
+              placeholder="请输入"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <label class="layui-form-label">原密码</label>
+          <div class="layui-input-block">
+            <input
+              type="password"
+              name="oldPwd"
+              required
+              lay-verify="required|passwd2"
+              placeholder="请输入"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <label class="layui-form-label">新密码</label>
+          <div class="layui-input-block">
+            <input
+              type="password"
+              name="userPwd2"
+              required
+              lay-verify="required|passwd2"
+              placeholder="请输入"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <label class="layui-form-label">确认密码</label>
+          <div class="layui-input-block">
+            <input
+              type="password"
+              name="checkPwd2"
+              required
+              lay-verify="required|checkpwd2"
+              placeholder="请输入"
+              autocomplete="off"
+              class="layui-input"
+            />
+          </div>
+        </div>
+        <div class="layui-form-item" style="text-align: center">
+          <div class="layui-input-block" style="margin-left: 0">
+            <button
+              class="layui-btn"
+              id="userPwdBtn"
+              lay-submit
+              lay-filter="userpwdForm"
+            >
+              立即提交
+            </button>
+            <button type="button" class="cancleBtn layui-btn layui-btn-primary">
+              取消
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <!-- 修改登录人密码 end-->
+    <script src="./static/js/utils.js"></script>
+    <script type="text/javascript" language="javascript">
+    
+      !(function () {
+        
+        getStatus(); //获取状态
+        //初始化数据
+        var typeArr = ["判断题", "单选题", "多选题"],
+          stsxList = ADMIN_SETTING.stsxList,
+          sycxList = window.ADMIN_SETTING.sycxList,
+          ksyyList = window.ADMIN_SETTING.sqyyList,
+          stflList = [
+            { label: "A01", value: "A01" },
+            { label: "A02", value: "A02" },
+            { label: "A03", value: "A03" },
+            { label: "A04", value: "A04" },
+            { label: "A05", value: "A05" },
+            { label: "A07", value: "A07" },
+            { label: "B01", value: "B01" },
+            { label: "B02", value: "B02" },
+            { label: "B03", value: "B03" },
+            { label: "B04", value: "B04" },
+            { label: "B05", value: "B05" },
+            { label: "B06", value: "B06" },
+            { label: "B07", value: "B07" },
+            { label: "B09", value: "B09" },
+          ];
+        fileToSubmit = null; //待提交的图片
+
+        var options = {
+          url: "/cstk/getList",
+          tableQuery: {
+            type: 0, //查当前题目内容，1查上一题，2查下一题
+            stxh: "",
+            stsx: "", //试题属性 1：常规题，2：精简题
+            sttx: "", //试题题型  1对错题 2 单选题 3多选题
+            stnr: "", //试题内容
+            stbj: "", //试题标记 1：可用，0：不可用
+            sycx: "", //适用车型
+            ksyy: "", //考试原因
+            stnd: "", //试题难度（a01,a02...a10  b01,b02,,,,,b10）
+            stfl: "", //试题分类 Code=15
+            sort: "", //排序：1按正确数倒叙   2按错误数倒叙
+            page: 1,
+            size: 20,
+          },
+          suc: renderFun, //渲染dom函数
+        };
+        var sortCorrectVal = null,
+          total = 0,
+          currentIndex = 0,
+          currentCstId = 0,
+          sortErrorVal = null;
+        var tableData = []; //列表数据
+        var currnetData = null; //当前选中的row
+
+        var laypage = layui.laypage,
+          layer = layui.layer,
+          upload = layui.upload,
+          form = layui.form;
+        var jq = layui.$;
+
+        // var wh = jq(window).height(),
+        //   ww = jq(window).width();
+        // document.addEventListener("resize", function () {
+        //   wh = jq(window).height();
+        //   ww = jq(window).width();
+        // });
+        jq("#prevExam").hide();
+        jq("#nextExam").hide();
+        jq("#formEditBtn").hide();
+
+        // 加载试题属性
+        addOptions("#stsxSelect", stsxList);
+
+        // 加载适用车型
+        addOptions("#sycxList", sycxList);
+
+        // 加载考试原因
+        addOptions("#ksyyList", ksyyList);
+
+        // 加载试题分类
+        addOptions("#stflList", stflList);
+        var levelsArr = ADMIN_SETTING.levelsArr.map((item) => {
+          item.label = item.label.substr(1);
+          return item;
+        });
+        levelsArr.shift();
+        // 难度
+        addOptions("#stndList", levelsArr);
+        addOptions("#stndListId", levelsArr, 3);
+
+        form.render(); //加载表单元素
+        // jq("#stInfo").hide();
+        // 查询
+        form.on("submit(searchForm)", function (data) {
+          // options.tableQuery.page = 1;
+          options.tableQuery = Object.assign(options.tableQuery, data.field);
+          let ndstr = data.field.stnd;
+
+          options.tableQuery.stnd = ndstr;
+
+          // getTable(0);
+          getList(options, null);
+          return false;
+        });
+
+        function getTable(num) {
+          ajaxPromise({
+            url: "/cstk/getList",
+            datas: options.tableQuery,
+            type: "get",
+          }).then((res) => {
+            if (res.data.length > 0) {
+              tableData = res.data.map((item,index)=>{
+                item.index=index
+                return item
+              });
+              currnetData = res.data[num];
+              currentCstId = currnetData.stxh;
+              currentIndex = num;
+              total = res.data.length;
+              renderFun(res.data)
+              // jq("#stNums").text(currentIndex + 1 + " / " + total);
+              // showInfo();
+              // jq("#stInfo").show();
+              // jq("#formEditBtn").show();
+            } else {
+              layer.msg("未查到数据！", { icon: 2, time: 2000 });
+              // jq("#stNums").text("0 / 0");
+              // jq("#stInfo").hide();
+            }
+          });
+        }
+
+        // 上一题
+        jq(document).on("click", "#prevExam", function (e) {
+          e.preventDefault();
+          currentIndex--;
+          currnetData = tableData[currentIndex-1];
+          currentCstId = currnetData.stxh;
+          // jq("#stNums").text(currentIndex + 1 + " / " + total);
+          showInfo();
+        });
+        // 下一题
+        jq(document).on("click", "#nextExam", function (e) {
+          e.preventDefault();
+          currentIndex++;
+          currnetData = tableData[currentIndex-1];
+          currentCstId = currnetData.stxh;
+          // jq("#stNums").text(currentIndex + 1 + " / " + total);
+          showInfo();
+        });
+
+        // 展示试题信息
+        function showInfo() {
+          if (currentIndex > 0) {
+            jq("#prevExam").show();
+          } else {
+            jq("#prevExam").hide();
+          }
+          if (currentIndex < total - 1) {
+            jq("#nextExam").show();
+          } else {
+            jq("#nextExam").hide();
+          }
+          let d = JSON.parse(JSON.stringify(currnetData));
+          let stnda = [];
+          if (d.stnd) {
+            stnda = d.stnd.split(ADMIN_SETTING.letter);
+            stnda.shift();
+          }
+          levelsArr.map((cell) => {
+            d["stnd" + cell.label] = "";
+          });
+          stnda.map((s) => {
+            d["stnd" + s] = "on";
+          });
+
+          d.gxsj = formatData(new Date(d.gxsj).getTime());
+          let da = d.stda,
+            dastr = da;
+          let lx = d.sttx;
+          if (lx == 1) {
+            // 判断题
+            dastr = da != "N" ? "正确（Y）" : "错误（N）";
+            jq("#selectItems").hide();
+          } else {
+            jq("#selectItems").show();
+          }
+          jq(".stda").text(dastr);
+          jq(".ksyy").text(d.ksyy);
+          jq(".stlx").text(d.stlx);
+          jq(".stxh").text(d.stxh);
+          jq(".stbj").text(d.stbj == 1 ? "可用" : "不可用");
+          jq(".txlj").text(d.txlj);
+          jq(".sttx").text(typeArr[d.sttx - 1]);
+          jq(".stnr").text(d.stnr);
+          jq(".xzdaa").text(d.xzdaa);
+          jq(".xzdab").text(d.xzdab);
+          jq(".xzdac").text(d.xzdac);
+          jq(".xzdad").text(d.xzdad);
+          jq(".sycx").text(d.sycx);
+          jq(".gxsj").text(d.gxsj);
+          jq(".stfl").text(d.stfl);
+          jq(".custom").text(d.custom > 0 ? "是" : "否");
+          jq(".correctCount").text(d.correctCount);
+          jq(".errorCount").text(d.errorCount);
+          jq(".stsx").text(stsxList[d.stsx - 1].label);
+
+          form.val("postForm", d);
+          if (d.stsx == 2) {
+            jq(".imgdom").show();
+            var cstimg = new Image();
+            cstimg.src = "./static/cstimgs/" + d.stxh + ".jpg";
+            cstimg.onload = function () {
+              jq(".imgErr").hide();
+              jq("#previewImg").show();
+              jq("#previewImg").attr(
+                "src",
+                "./static/cstimgs/" + d.stxh + ".jpg"
+              );
+            };
+            cstimg.onerror = function () {
+              jq(".imgErr").show();
+              jq("#previewImg").hide();
+            };
+          } else {
+            jq(".imgdom").hide();
+          }
+          if (currentIndex > 1) {
+            jq("#prevExam").show();
+          } else {
+            jq("#prevExam").hide();
+          }
+          if (currentIndex < 20) {
+            jq("#nextExam").show();
+          } else {
+            jq("#nextExam").hide();
+          }
+          form.render();
+        }
+
+        // 修改查询的排序条件
+        form.on("checkbox(sortBycorrectCount)", function (data) {
+          sortCorrectVal = data.elem.checked;
+          if (data.elem.checked) {
+            jq("#sortByerrorCount").attr("checked", false);
+            sortErrorVal = false;
+          }
+          console.log(data.elem.checked);
+          form.render();
+        });
+        form.on("checkbox(sortByerrorCount)", function (data) {
+          sortErrorVal = data.elem.checked;
+          if (data.elem.checked) {
+            jq("#sortBycorrectCount").attr("checked", false);
+            sortCorrectVal = false;
+          }
+          console.log(data.elem.checked);
+          form.render();
+        });
+
+        // 编辑考题表单内容提交
+        form.on("submit(formEdit)", function (data) {
+          let datas = data.field;
+          let ndstr = "";
+          for (let v in datas) {
+            ndstr += datas[v];
+          }
+
+          datas.stnd = ndstr;
+          datas.stxh = currentCstId;
+          ajaxPromise({
+            url: "/cstk/update",
+            datas: JSON.stringify(datas),
+            type: "post",
+          }).then((res) => {
+            layer.msg("操作成功！", { icon: 1, time: 2000 });
+            getTable(currentIndex);
+          });
+          // parent.layer.closeAll();
+          return false;
+        });
+
+        // 删除考题
+        jq(document).on("click", ".delRow", function (e) {
+          let id = e.target.dataset.id;
+          layer.confirm("确认删除？", function (index) {
+            ajaxPromise({
+              url: "/cst/del",
+              datas: JSON.stringify({ cstId: id }),
+              type: "post",
+            }).then((res) => {
+              layer.msg("操作成功！", { icon: 1, time: 2000 });
+              getList(options, null);
+            });
+            layer.close(index);
+          });
+        });
+
+        jq(document).on("click", "#cancleBtn", function () {
+          getList(options, null);
+          parent.layer.closeAll();
+          // parent.location.reload();
+        });
+
+        // 查看编辑考题
+        var detailIndex = 1;
+        jq(document).on("click", ".editRow", function () {
+              jq("#formEditBtn").show();
+          currentCstId = jq(this).context.dataset.id;
+
+          currnetData = tableData.filter((item) => {
+            return item.stxh == currentCstId;
+          });
+          currentIndex =Number(currnetData[0].index) +1; //当前题序号
+          if (currentIndex > 1) {
+            jq("#prevExam").show();
+          } else {
+            jq("#prevExam").hide();
+          }
+          if (currentIndex < 20) {
+            jq("#nextExam").show();
+          } else {
+            jq("#nextExam").hide();
+          }
+          let d = JSON.parse(JSON.stringify(currnetData[0]));
+          let stnda = [];
+          if (d.stnd) {
+            stnda = d.stnd.split(ADMIN_SETTING.letter);
+            stnda.shift();
+          }
+
+          levelsArr.map((cell) => {
+            d["stnd" + cell.label] = "";
+          });
+          stnda.map((s) => {
+            d["stnd" + s] = "on";
+          });
+
+          d.gxsj = formatData(new Date(d.gxsj).getTime());
+          let da = d.stda,
+            dastr = da;
+          let lx = d.sttx;
+          if (lx == 1) {
+            // 判断题
+            dastr = da != "N" ? "正确（Y）" : "错误（N）";
+            jq("#selectItems").hide();
+          } else {
+            jq("#selectItems").show();
+          }
+          jq(".stda").text(dastr);
+          jq(".ksyy").text(d.ksyy);
+          jq(".stlx").text(d.stlx);
+          jq(".stxh").text(d.stxh);
+          jq(".stbj").text(d.stbj == 1 ? "可用" : "不可用");
+          jq(".txlj").text(d.txlj);
+          jq(".sttx").text(typeArr[d.sttx - 1]);
+          jq(".stnr").text(d.stnr);
+          jq(".xzdaa").text(d.xzdaa);
+          jq(".xzdab").text(d.xzdab);
+          jq(".xzdac").text(d.xzdac);
+          jq(".xzdad").text(d.xzdad);
+          jq(".sycx").text(d.sycx);
+          jq(".gxsj").text(d.gxsj);
+          jq(".stfl").text(d.stfl);
+          jq(".custom").text(d.custom > 0 ? "是" : "否");
+          jq(".correctCount").text(d.correctCount);
+          jq(".errorCount").text(d.errorCount);
+          jq(".stsx").text(stsxList[d.stsx - 1].label);
+
+          let hh = ADMIN_SETTING.wh + "px",
+            ww1 = ADMIN_SETTING.ww + "px";
+          detailIndex = layer.open({
+            type: 1,
+            title: "编辑考题",
+            content: jq("#cstpostDialog"),
+            area: [ww1, hh], //弹窗尺寸
+            success: function (layero, index) {
+              form.val("postForm", d);
+              if (d.stsx ==2) {
+                jq(".imgdom").show();
+                var cstimg = new Image();
+                cstimg.src = "./static/cstimgs/" + d.stxh + ".jpg";
+                cstimg.onload = function () {
+                  jq(".imgErr").hide();
+                  jq("#previewImg").show();
+                  jq("#previewImg").attr(
+                    "src",
+                    "./static/cstimgs/" + d.stxh + ".jpg"
+                  );
+                };
+                cstimg.onerror = function () {
+                  jq(".imgErr").show();
+                  jq("#previewImg").hide();
+                };
+              } else {
+                jq(".imgdom").hide();
+              }
+            },
+            cancel: function (index, layero) {
+              getList(options, null);
+              layer.close(index);
+            },
+          });
+        });
+
+        // 考题类型变化
+        function selectChangeFun(val) {
+          switch (val) {
+            case "1":
+              jq("#dxtAnswer,#ddxtAnswer,#selectItems").hide();
+              jq("#pdtAnswer").show();
+              break;
+            case "2":
+              jq("#pdtAnswer,#ddxtAnswer").hide();
+              jq("#dxtAnswer,#selectItems").show();
+              break;
+            case "3":
+              jq("#pdtAnswer,#dxtAnswer").hide();
+              jq("#ddxtAnswer,#selectItems").show();
+              break;
+            default:
+              console.log(val);
+              break;
+          }
+        }
+
+        // 渲染列表
+        function renderFun(data, t) {
+          total = t;
+          jq('.table-total').text('总数：'+total)
+          jq("#tableBody").empty();
+          let datas = data;
+          tableData = data.map((item,index)=>{
+            item.index=index
+            return item
+          });
+          for (let i = 0; i < datas.length; i++) {
+            let item = datas[i];
+            let index = i;
+            let tr = "<tr><td>" + item.stxh;
+              if (item.stsx == 2) {
+              tr +=
+                '&#x3000;<i style="font-size:14px;color:#1E9FFF" class="layui-icon layui-icon-picture"></i>';
+            }
+            tr +=
+              "</td><td>" +
+              (item.stsx ? ADMIN_SETTING.stsxList[item.stsx - 1].label : "") +
+              "</td><td>" +
+              typeArr[item.sttx - 1] +
+              "</td>";
+            tr += "<td>" + item.stnr + "</td>";
+            tr += "<td>" + item.sycx + "</td>";
+            tr += "<td>" + item.stfl + "</td>";
+            tr += "<td>" + item.ksyy + "</td>";
+            let ndstr = "";
+            if (item.stnd) {
+              ndstr = item.stnd.split(ADMIN_SETTING.letter).join("，");
+              ndstr = ndstr.substr(1);
+            }
+            tr += "<td>" + ndstr + "</td>";
+
+            tr += "<td>" + formatData(item.gxsj) + "</td>";
+
+            tr +=
+              '<td><a href="#" data-id="' +
+              item.stxh +
+              '" class="editRow layui-btn layui-btn-primary layui-btn-xs">查看</a></td></tr>';
+            jq("#tableBody").append(tr);
+          }
+        }
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.abc.wzhks.web.dao.LogMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.abc.wzhks.web.model.Log">
+		<id column="log_id" property="logId" />
+		<result column="student_idcard" property="studentIdcard" />
+		<result column="student_name" property="studentName" />
+		<result column="student_level" property="studentLevel" />
+		<result column="student_car_type" property="studentCarType" />
+		<result column="student_subject" property="studentSubject" />
+		<result column="log_score" property="logScore" />
+		<result column="log_lose" property="logLose" />
+		<result column="log_error" property="logError" />
+		<result column="log_exam_time" property="logExamTime" />
+		<result column="log_exam_desk" property="logExamDesk" />
+		<result column="log_create_time" property="logCreateTime" />
+		<result column="log_exam_number" property="logExamNumber" />
+		<result column="log_exam_answer" property="logExamAnswer" />
+		<result column="log_student_answer" property="logStudentAnswer" />
+		<result column="log_error_exam_number" property="logErrorExamNumber" />
+		<result column="log_student_error_answer" property="logStudentErrorAnswer" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        log_id AS logId, student_idcard AS studentIdcard, student_name AS studentName, student_level AS studentLevel, student_car_type AS studentCarType, student_subject AS studentSubject, log_score AS logScore, log_lose AS logLose, log_error AS logError, log_exam_time AS logExamTime, log_exam_desk AS logExamDesk, log_create_time AS logCreateTime, log_exam_number AS logExamNumber, log_exam_answer AS logExamAnswer, log_student_answer AS logStudentAnswer, log_error_exam_number AS logErrorExamNumber, log_student_error_answer AS logStudentErrorAnswer
+    </sql>
+
+	<select id="getLogList" parameterType="com.abc.wzhks.entity.request.ReqGetLogList" resultType="com.abc.wzhks.web.model.Log">
+		SELECT
+			log_id,
+			student_idcard,
+			student_name,
+			student_level,
+			student_car_type,
+			student_subject,
+			log_score,
+			log_lose,
+			log_error,
+			log_exam_time,
+			log_exam_desk,
+			log_create_time,
+			log_exam_number,
+			log_error_exam_number,
+			log_error_exam_answer
+		FROM
+			log
+		WHERE 1=1
+		<if test="list.beginTime != null and list.endTime != null">
+			AND log_create_time between #{list.beginTime} and #{list.endTime}
+		</if>
+		<if test="list.beginTime != null and list.endTime == null">
+			AND log_create_time >= #{list.beginTime}
+		</if>
+		<if test="list.beginTime == null and list.endTime != null">
+			AND #{list.endTime} >= log_create_time
+		</if>
+		<if test="list.studentIdcard != null and list.studentIdcard != ''">
+			AND student_idcard like concat('%',#{list.studentIdcard,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="list.studentName != null and list.studentName != ''">
+			AND student_name like concat('%',#{list.studentName,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="list.studentCarType != null and list.studentCarType != ''">
+			AND student_car_type = #{list.studentCarType,jdbcType=VARCHAR}
+		</if>
+		<if test="list.studentSubject != null">
+			AND student_subject = #{list.studentSubject,jdbcType=INTEGER}
+		</if>
+		<if test="list.isPass == 1">
+			AND log_score > 89
+		</if>
+		<if test="list.isPass == 2">
+			AND 90 > log_score
+		</if>
+		<if test="list.logError == 1">
+			ORDER BY log_error DESC
+		</if>
+	</select>
+
+	<select id="getErrorList" parameterType="com.abc.wzhks.entity.request.ReqGetErrorList" resultType="com.abc.wzhks.web.model.Cstk">
+		SELECT
+			b.stxh,
+			b.bh,
+			b.stlx,
+			b.stsx,
+			b.sttx,
+			b.stnr,
+			b.xzdaa,
+			b.xzdab,
+			b.xzdac,
+			b.xzdad,
+			b.txlj,
+			b.stda,
+			b.stbj,
+			b.sycx,
+			b.tk1bh,
+			b.tk2bh,
+			b.prov,
+			b.jyw,
+			b.gxsj,
+			b.stfl,
+			b.tklx,
+			b.ksyy,
+			b.stnd
+		FROM
+			cstk b
+		WHERE
+			b.stxh REGEXP ( SELECT REPLACE ( ( SELECT log_error_exam_number FROM log WHERE log_id = #{logId} ), ',', '|' ) )
+		ORDER BY sttx ASC
+	</select>
+</mapper>

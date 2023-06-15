@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.abc.wzhks.web.dao.CstkMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.abc.wzhks.web.model.Cstk">
+		<id column="stxh" property="stxh" />
+		<result column="bh" property="bh" />
+		<result column="stlx" property="stlx" />
+		<result column="stsx" property="stsx" />
+		<result column="sttx" property="sttx" />
+		<result column="stnr" property="stnr" />
+		<result column="xzdaa" property="xzdaa" />
+		<result column="xzdab" property="xzdab" />
+		<result column="xzdac" property="xzdac" />
+		<result column="xzdad" property="xzdad" />
+		<result column="txlj" property="txlj" />
+		<result column="stda" property="stda" />
+		<result column="stbj" property="stbj" />
+		<result column="sycx" property="sycx" />
+		<result column="tk1bh" property="tk1bh" />
+		<result column="tk2bh" property="tk2bh" />
+		<result column="prov" property="prov" />
+<!--		<result column="jyw" property="jyw" />-->
+		<result column="gxsj" property="gxsj" />
+		<result column="stfl" property="stfl" />
+		<result column="tklx" property="tklx" />
+		<result column="ksyy" property="ksyy" />
+		<result column="stnd" property="stnd" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        stxh, bh, stlx, stsx, sttx, stnr, xzdaa, xzdab, xzdac, xzdad, txlj, stda, stbj, sycx, tk1bh, tk2bh, prov, jyw, gxsj, stfl, tklx, ksyy, stnd
+    </sql>
+
+	<select id="getCstkList" parameterType="com.abc.wzhks.entity.request.ReqGetCstkList" resultType="com.abc.wzhks.web.model.Cstk">
+		SELECT
+			stxh,
+			bh,
+			stlx,
+			stsx,
+			sttx,
+			stnr,
+			xzdaa,
+			xzdab,
+			xzdac,
+			xzdad,
+			txlj,
+			stda,
+			stbj,
+			sycx,
+			tk1bh,
+			tk2bh,
+			prov,
+			jyw,
+			gxsj,
+			stfl,
+			tklx,
+			ksyy,
+			stnd
+		FROM
+			cstk
+		WHERE
+			stbj ='1'
+		<if test="list.stxh != null and list.stxh != ''">
+			AND stxh like concat('%',#{list.stxh,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="list.stnr != null and list.stnr != ''">
+			AND stnr like concat('%',#{list.stnr,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="list.sttx != null and list.sttx != ''">
+			AND sttx = #{list.sttx,jdbcType=VARCHAR}
+		</if>
+		<if test="list.stsx != null and list.stsx != ''">
+			AND stsx = #{list.stsx,jdbcType=VARCHAR}
+		</if>
+		<if test="list.stfl != null and list.stfl != ''">
+			AND stfl = #{list.stfl,jdbcType=VARCHAR}
+		</if>
+		<if test="list.ksyy != null and list.ksyy != ''">
+			AND ksyy like concat('%',#{list.ksyy,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="list.sycx != null and list.sycx != ''">
+			AND sycx like concat('%',#{list.sycx,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="list.stnd != null and list.stnd != ''">
+			AND stnd REGEXP(#{list.stnd,jdbcType=VARCHAR})
+		</if>
+	</select>
+</mapper>

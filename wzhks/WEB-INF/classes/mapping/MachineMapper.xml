@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.abc.wzhks.web.dao.MachineMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.abc.wzhks.web.model.Machine">
+		<id column="machine_id" property="machineId" />
+		<result column="room_id" property="roomId" />
+		<result column="ip" property="ip" />
+		<result column="mac" property="mac" />
+		<result column="number" property="number" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        machine_id AS machineId, room_id AS roomId, ip, mac, number
+    </sql>
+
+	<select id="getList" resultType="com.abc.wzhks.entity.response.RespMachineList">
+		select
+		a.machine_id as machineId,
+		a.ip as ip,
+		a.mac as mac,
+		a.number as 'number',
+		b.room_id as roomId,
+		b.room_name as roomName
+		from machine as a
+		left join room as b on a.room_id = b.room_id
+		<trim prefix="where" prefixOverrides="and | or">
+			<if test="ip != null and ip != ''">
+				AND a.ip like concat('%',#{ip,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="mac != null and mac != ''">
+				AND a.mac like concat('%',#{mac,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="number != null and number != ''">
+				AND a.number like concat('%',#{number,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="roomId != null">
+				AND a.room_id = #{roomId,jdbcType=INTEGER}
+			</if>
+		</trim>
+	</select>
+
+	<select id="listAll" resultType="com.abc.wzhks.web.model.Machine">
+		SELECT a.*,b.room_name AS roomName FROM machine AS a INNER JOIN room AS b ON a.room_id=b.room_id
+	</select>
+</mapper>

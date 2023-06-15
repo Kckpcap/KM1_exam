@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta HTTP-EQUIV="pragma" CONTENT="no-cache" />
+    <meta HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate" />
+    <meta HTTP-EQUIV="expires" CONTENT="0" />
+    <title>身份证信息读取</title>
+    <script src="./static/layui/layui.all.js"></script>
+    <style>
+      html,
+      body {
+        position: relative;
+        height: 100%;
+        overflow: hidden;
+        font-family: "Helvetica Neue", Helvetica, "PingFang SC",
+          "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+      }
+      body {
+        background: url(./static/imgs/bg1.png) no-repeat;
+        background-size: cover;
+      }
+      .main-info {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-left: -600px;
+        padding: 50px;
+        width: 1200px;
+        background-color: #17a0d3;
+        border-radius: 50px;
+        display: none;
+        box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+      }
+      .main-content {
+        padding: 50px 0;
+        /* background: url(/static/imgs/view.png) no-repeat; */
+        /* background-size: 100% auto; */
+        background-color: #fff;
+        border-radius: 40px;
+        text-align: center;
+      }
+      .wait-box {
+      }
+      .no-connect {
+      }
+      .wait-box p,
+      .no-connect p,
+      .card-info p {
+        margin-top: 49px;
+        color: #2a5082;
+        font-size: 36px;
+        font-weight: bold;
+      }
+      .no-connect p {
+        margin-top: 16px;
+      }
+      .card-info {
+        display: inline-block;
+      }
+      .card-info .info-table {
+        border-top: 1px solid #bfbfbf;
+        border-left: 1px solid #bfbfbf;
+      }
+      .card-info table {
+        width: 100%;
+      }
+      .card-info td {
+        min-width: 168px;
+        height: 80px;
+        border-right: 1px solid #bfbfbf;
+        border-bottom: 1px solid #bfbfbf;
+        font-size: 36px;
+        font-weight: bold;
+      }
+      .card-info span {
+        display: inline-block;
+        height: 80px;
+        font-size: 36px;
+        font-weight: bold;
+        line-height: 80px;
+        border-right: 1px solid #bfbfbf;
+        border-bottom: 1px solid #bfbfbf;
+      }
+      .card-info td.label {
+        background-color: #f1f1f1;
+      }
+      .show-num {
+        position: relative;
+        margin: 10px auto 0;
+        width: 276px;
+        height: 210px;
+      }
+      .show-info {
+        font-weight: bold;
+      }
+      .black-box {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 90px;
+        background-color: #4b4b4b;
+        z-index: 1;
+      }
+      .active-box {
+        position: absolute;
+        bottom: 28px;
+        left: 50%;
+        margin-left: -109px;
+        width: 218px;
+        height: 170px;
+        border-radius: 10px;
+        background-color: #ffebe2;
+        z-index: 2;
+      }
+      .active-box div {
+        line-height: 1;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main-info">
+      <div class="main-content">
+        <div class="card-info" style="display: none">
+          <div class="info-table">
+            <table>
+              <tr>
+                <td class="label">姓名</td>
+                <td id="name">--</td>
+                <td class="label">性别</td>
+                <td id="sex">--</td>
+                <td rowspan="2">
+                  <img id="HeadPic" src="" alt="" />
+                </td>
+              </tr>
+              <tr>
+                <td class="label">民族</td>
+                <td id="nation">--</td>
+                <td class="label">身份证号</td>
+                <td id="idcard">--</td>
+              </tr>
+            </table>
+          </div>
+          <p id="noKsjh" style="margin-top: 80px"></p>
+          <div class="show-info" id="hasKsjh" style="display: none">
+            <div
+              style="padding-bottom: 10px; font-size: 60px; color: #ff5a00"
+              id="roomDom"
+            >
+              房间：--
+            </div>
+            <div style="font-size: 60px; color: #ff5a00" id="ksjhDom">
+              机器号：--
+            </div>
+          </div>
+        </div>
+        <div class="wait-box" style="display: none">
+          <img src="./static/imgs/shua.png" alt="" />
+          <p>请将身份证放在读卡器上！</p>
+        </div>
+        <div class="no-connect">
+          <img src="./static/imgs/un_start.png" alt="" />
+          <p id="noConnectWarn">未检测到读卡设备/读卡插件未启动！</p>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript" language="javascript">
+      !(function () {
+        var jq = layui.$,
+          stateTime = 100,
+          readTime = 5000;
+
+        var roomId = location.href.split("=")[1];
+        setStyle();
+        window.addEventListener("resize", setStyle);
+        //创建读卡控件
+        var CertCtl = new IDCertCtl();
+
+        connectFun();
+
+        //身份证读卡控件创建
+        function IDCertCtl() {
+          //创建用于与服务交换数据的对象
+          this.xhr = createXmlHttp();
+          //连接
+          this.connect = CertCtl_connect;
+          //读卡
+          this.readCert = CertCtl_readCert;
+        }
+
+        // 连接
+        function connectFun() {
+          clearFun();
+          var r = CertCtl.connect();
+          if (r == "" || r.length < 3) {
+            jq("#noConnectWarn").text("未检测到读卡设备/读卡插件未启动！");
+            setTimeout(connectFun, stateTime);
+          } else {
+            var connectResult = JSON.parse(r);
+            if (connectResult.resultFlag < 0) {
+              jq(".no-connect").show();
+              jq("#noConnectWarn").text("未连接设备，请连接设备！");
+              jq(".wait-box,.card-info").hide();
+              setTimeout(connectFun, stateTime);
+            } else {
+              jq(".no-connect,.card-info").hide();
+              jq(".wait-box").show();
+              readCardFun();
+            }
+            setStyle();
+          }
+        }
+        // 读卡
+        function readCardFun() {
+          var r = CertCtl.readCert();
+          if (r == "" || r.length < 3) {
+            setTimeout(connectFun, stateTime);
+          } else {
+            // console.log(JSON.stringify(r),r.length)
+            var readCardResult = JSON.parse(r);
+            if (readCardResult.resultFlag < 0) {
+              jq(".wait-box").show();
+              jq(".no-connect,.card-info").hide();
+              setTimeout(connectFun, stateTime);
+            } else {
+              jq(".card-info").show();
+              jq(".no-connect,.wait-box").hide();
+              sendIdCardInfo(readCardResult);
+            }
+          }
+        }
+        function setStyle() {
+          var mainh = jq(".main-info").outerHeight();
+          jq(".main-info")
+            .css({
+              marginTop: -parseInt(mainh / 2) + "px",
+            })
+            .show();
+        }
+        //创建XMLHttpRequest 对象，用于在后台与服务器交换数据
+        function createXmlHttp() {
+          var xmlHttp = null;
+          //根据window.XMLHttpRequest对象是否存在使用不同的创建方式
+          if (window.XMLHttpRequest) {
+            xmlHttp = new XMLHttpRequest(); //FireFox、Opera等浏览器支持的创建方式
+          } else {
+            xmlHttp = new ActiveXObject("Microsoft.XMLHTTP"); //IE浏览器支持的创建方式
+          }
+          return xmlHttp;
+        }
+        //获取状态方法
+        function CertCtl_getStatus() {
+          var result = "";
+          //创建请求 第一个参数是代表以post方式发送；第二个是请求端口和地址；第三个表示是否异步
+          CertCtl.xhr.open(
+            "POST",
+            "http://127.0.0.1:18889/api/getStatus",
+            false
+          );
+          //发送请求
+          try {
+            CertCtl.xhr.send();
+          } catch (e) {}
+          if (CertCtl.xhr.readyState == 4 && CertCtl.xhr.status == 200) {
+            result = CertCtl.xhr.responseText;
+            CertCtl.xhr.readyState = 1;
+          }
+          return result;
+        }
+        //连接方法
+        function CertCtl_connect() {
+          var result = "";
+          //创建请求 第一个参数是代表以post方式发送；第二个是请求端口和地址；第三个表示是否异步
+          CertCtl.xhr.open("POST", "http://127.0.0.1:18889/api/connect", false);
+
+          //发送请求
+          try {
+            CertCtl.xhr.send();
+          } catch (e) {}
+          //返回值readyState   0: 请求未初始化
+          //				    1: 服务器连接已建立
+          //				    2：请求已接收
+          //				    3: 请求处理中
+          //				    4: 请求已完成，且响应已就绪
+          //返回值status      200: "OK"
+          //					404: 未找到页面
+          //当返回值readyState为4且status为200时,为查询成功
+          if (CertCtl.xhr.readyState == 4 && CertCtl.xhr.status == 200) {
+            result = CertCtl.xhr.responseText;
+            CertCtl.xhr.readyState = 1;
+          }
+          return result;
+        }
+        //执行读卡操作
+        function CertCtl_readCert() {
+          var result = "";
+          try {
+            //创建请求 第一个参数是代表以post方式发送；第二个是请求端口和地址；第三个表示是否异步
+            //CertCtl.xhr.open("POST", "http://127.0.0.1:18889/api/readCard", false); //readCard读卡，不生成正反面仿复印件
+            CertCtl.xhr.open(
+              "POST",
+              "http://127.0.0.1:18889/api/readCert",
+              false
+            ); //readCert读卡，生成正反面仿复印件
+            //发送请求
+            CertCtl.xhr.send();
+            if (CertCtl.xhr.readyState == 4 && CertCtl.xhr.status == 200) {
+              result = CertCtl.xhr.responseText;
+              CertCtl.xhr.readyState = 1;
+            }
+          } catch (e) {
+            setTimeout(connectFun, readTime);
+          }
+          return result;
+        }
+        // 向服务器发送身份证信息
+        function sendIdCardInfo(datas) {
+          let t = "?t=" + new Date().getTime();
+          let data = datas.resultContent;
+          let json = {
+            studentName: data.partyName,
+            studentIdcard: data.certNumber,
+            studentPic: data.identityPic,
+            roomId: roomId,
+          };
+          showCardInfo(data);
+          jq.ajax({
+            url: "/wzhks/exam/getKsjh" + t,
+            data: JSON.stringify(json),
+            type: "post",
+            xhrFields: {
+              withCredentials: true,
+            },
+            contentType: "application/json",
+            success: function (res) {
+              data.msg = "";
+              if (res.code == 0) {
+                data.ksjh = res.data.number || "--";
+                data.roomName = res.data.roomName || "--";
+                setTimeout(connectFun, readTime);
+              } else {
+                data.msg = res.msg || "信息获取失败，重新读卡中...";
+                setTimeout(connectFun, stateTime);
+              }
+              showCardInfo(data);
+            },
+            error: function (err) {
+              console.log(err);
+              setTimeout(connectFun, readTime);
+            },
+          });
+        }
+        // 显示读卡信息
+        function showCardInfo(data) {
+          var num = data.certNumber;
+          var n = num.substr(0, 6) + "********" + num.substr(14);
+          jq("#HeadPic").attr(
+            "src",
+            "data:image/jpeg;base64," + data.identityPic
+          );
+          jq("#name").text(data.partyName);
+          jq("#sex").text(data.gender > 0 ? "男" : "女");
+          jq("#nation").text(data.nation);
+          jq("#idcard").text(n);
+          if (!data.ksjh) {
+            jq("#hasKsjh").hide();
+            jq("#noKsjh").show();
+            jq("#noKsjh").text(data.msg);
+          } else {
+            jq("#hasKsjh").show();
+            jq("#noKsjh").hide();
+            jq("#ksjhDom").text("机器号：" + data.ksjh);
+            jq("#roomDom").text("房间：" + data.roomName);
+          }
+
+          setStyle();
+        }
+        // 清空读卡信息
+        function clearFun() {
+          jq("#HeadPic").attr("src", "");
+          jq("#name").text("--");
+          jq("#sex").text("--");
+          jq("#nation").text("--");
+          jq("#idcard").text("--");
+          jq("#ksjhDom").text("--");
+          jq("#roomDom").text("--");
+        }
+      })();
+    </script>
+  </body>
+</html>
